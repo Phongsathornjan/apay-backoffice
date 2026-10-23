@@ -1,0 +1,157 @@
+"use client";
+
+import Link from "next/link";
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  CalendarClock,
+  CreditCard,
+  Gauge,
+  ShieldCheck,
+} from "lucide-react";
+import type { DashboardSubscriptionSummary } from "@/types/api";
+import {
+  daysUntil,
+  formatDate,
+  formatNumber,
+  formatPercent,
+  quotaTone,
+} from "@/lib/format";
+import { Badge, StatusBadge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+export function SubscriptionBanner({
+  subscription,
+  showDetailsLink = true,
+  adminView = false,
+}: {
+  subscription: DashboardSubscriptionSummary | null;
+  showDetailsLink?: boolean;
+  adminView?: boolean;
+}) {
+  if (!subscription) {
+    return (
+      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-dashed border-slate-300 bg-white p-5 sm:flex-row sm:items-center">
+        <div className="flex items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+            <CreditCard className="size-5" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">ยังไม่มีแพ็กเกจที่ใช้งานอยู่</p>
+            <p className="mt-0.5 text-xs leading-5 text-slate-500">
+              {adminView
+                ? "ธุรกิจนี้ยังไม่ถูกผูกแพ็กเกจ จึงยังไม่สามารถสร้าง API Key หรือ QR ได้"
+                : "กรุณาติดต่อผู้ดูแลระบบเพื่อผูกแพ็กเกจก่อนเริ่มใช้งาน API"}
+            </p>
+          </div>
+        </div>
+        {adminView ? (
+          <Link href="/admin/businesses">
+            <Button variant="secondary" icon={<ArrowUpRight className="size-3.5" />}>
+              ผูกแพ็กเกจ
+            </Button>
+          </Link>
+        ) : null}
+      </div>
+    );
+  }
+
+  const usedRatio =
+    subscription.quota_limit > 0 ? subscription.quota_used / subscription.quota_limit : 0;
+  const days = daysUntil(subscription.current_period_end) ?? subscription.days_until_period_end;
+  const isPastDue = subscription.status === "PAST_DUE";
+  const isCancelled = subscription.status === "CANCELLED";
+  const problematic = isPastDue || isCancelled;
+
+  return (
+    <section
+      className={cn(
+        "relative overflow-hidden rounded-2xl border p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:p-6",
+        problematic
+          ? "border-rose-200 bg-gradient-to-br from-rose-50 via-white to-white"
+          : "border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-white to-white",
+      )}
+    >
+      <div
+        className={cn(
+          "absolute -right-16 -top-24 size-64 rounded-full blur-3xl",
+          problematic ? "bg-rose-400/10" : "bg-emerald-400/10",
+        )}
+      />
+      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={cn(
+                "flex size-8 items-center justify-center rounded-xl",
+                problematic ? "bg-rose-100 text-rose-700" : "bg-emerald-100 text-emerald-700",
+              )}
+            >
+              {problematic ? <AlertTriangle className="size-4" /> : <ShieldCheck className="size-4" />}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+              Current package
+            </span>
+            <StatusBadge status={subscription.status} />
+            {subscription.package_code ? (
+              <Badge tone="indigo" className="font-mono uppercase">
+                {subscription.package_code}
+              </Badge>
+            ) : null}
+          </div>
+          <h2 className="mt-2.5 text-xl font-bold tracking-tight text-slate-900">
+            {subscription.package_name ?? "ไม่ระบุชื่อแพ็กเกจ"}
+          </h2>
+          <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarClock className="size-3.5" />
+              Paid through {formatDate(subscription.current_period_end)}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Gauge className="size-3.5" />
+              {days >= 0 ? `เหลือ ${days} วัน` : `เลยกำหนด ${Math.abs(days)} วัน`}
+            </span>
+          </p>
+          {isPastDue ? (
+            <p className="mt-2.5 max-w-2xl rounded-lg bg-rose-100/70 px-3 py-2 text-[11px] font-medium leading-5 text-rose-800">
+              แพ็กเกจเลยวันชำระแล้วและไม่มี grace period — โควต้าจะถูกตั้งเป็น 0
+              จนกว่าจะต่ออายุ
+            </p>
+          ) : null}
+        </div>
+
+        <div className="w-full max-w-sm shrink-0 rounded-xl border border-slate-200/80 bg-white/80 p-3.5 backdrop-blur">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              Quota usage
+            </p>
+            <p className="font-mono text-[11px] font-semibold tabular-nums text-slate-700">
+              {formatNumber(subscription.quota_used)} / {formatNumber(subscription.quota_limit)}
+            </p>
+          </div>
+          <Progress
+            value={usedRatio * 100}
+            tone={quotaTone(usedRatio)}
+            className="mt-2 h-2"
+            ariaLabel="โควต้าที่ใช้ไป"
+          />
+          <div className="mt-2.5 flex items-center justify-between text-[10px] text-slate-500">
+            <span>เหลือ {formatNumber(subscription.quota_remaining)} ครั้ง</span>
+            <span className="font-semibold">{formatPercent(usedRatio)}</span>
+          </div>
+          {showDetailsLink ? (
+            <Link
+              href="/subscription"
+              className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800"
+            >
+              ดูรายละเอียดแพ็กเกจ
+              <ArrowUpRight className="size-3" />
+            </Link>
+          ) : null}
+        </div>
+      </div>
+    </section>
+  );
+}
