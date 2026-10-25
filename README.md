@@ -38,8 +38,9 @@ PORT=4000 pnpm dev
 pnpm dev --port 4000
 ```
 
-The backend from `api-docs.html` uses port `3000`, so the frontend is normally
-run on `3001`. If the backend runs elsewhere, set:
+The backend from the [API docs](https://github.com/Phongsathornjan/apay-backend/blob/main/api-docs.html)
+uses port `3000`, so the frontend is normally run on `3001`. If the backend
+runs elsewhere, set:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://api.example.com
@@ -85,13 +86,13 @@ services/
   api.ts              HTTP client, envelopes, correlation IDs and token rotation
   auth.ts, dashboard.ts, api-keys.ts, packages.ts, subscriptions.ts, payments.ts, webhooks.ts
 types/
-  api.ts              API v1 request/response contracts from api-docs.html
+  api.ts              API v1 request/response contracts from the API docs
 ```
 
 ### API contract
 
-`api-docs.html` is the single source of truth. The HTTP client in
-`services/api.ts`:
+The [API docs](https://github.com/Phongsathornjan/apay-backend/blob/main/api-docs.html)
+are the single source of truth. The HTTP client in `services/api.ts`:
 
 - calls `/api/v1/...` using `NEXT_PUBLIC_API_BASE_URL`
 - attaches `Authorization: Bearer <access_token>`

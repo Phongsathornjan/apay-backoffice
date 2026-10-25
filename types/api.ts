@@ -1,8 +1,10 @@
 /**
  * APay API v1 contracts.
  *
- * Source of truth: api-docs.html. Keep request, response, query and enum
- * definitions in this file aligned with that document.
+ * Source of truth:
+ * https://github.com/Phongsathornjan/apay-backend/blob/main/api-docs.html
+ * Keep request, response, query and enum definitions in this file aligned
+ * with that document.
  */
 
 export type UserRole = "admin" | "business";

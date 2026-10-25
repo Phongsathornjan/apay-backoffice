@@ -28,3 +28,9 @@ Retain qualifying friction even if it is later fixed or worked around; record th
 Before the final response, run one reporting pass. If candidates remain, from this file's directory run `npx --no-install next internal agent-feedback-instructions` once without piping or truncating its output. Follow its output or error guidance. If a network sandbox blocks it, retry with network access; if it still returns no output, continue normally.
 
 <!-- END:nextjs-agent-feedback -->
+
+## API documentation
+
+`api-docs.html` is not kept in this repo. If you need the API docs, read them from the backend repo:
+
+https://github.com/Phongsathornjan/apay-backend/blob/main/api-docs.html
