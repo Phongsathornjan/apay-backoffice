@@ -9,6 +9,7 @@ import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { FormField, Input, Select } from "@/components/ui/form";
 import {
+  validateEmail,
   validateMaxLength,
   validatePassword,
   validatePromptPayId,
@@ -21,9 +22,8 @@ interface FormErrors {
   password?: string;
   confirmPassword?: string;
   business_name?: string;
+  email?: string;
   promptpay_id?: string;
-  line_destination?: string;
-  line_user_id?: string;
 }
 
 export function RegisterBusinessModal({
@@ -39,17 +39,12 @@ export function RegisterBusinessModal({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [businessName, setBusinessName] = useState("");
+  const [email, setEmail] = useState("");
   const [promptpayId, setPromptpayId] = useState("");
-  const [lineDestination, setLineDestination] = useState("");
-  const [lineUserId, setLineUserId] = useState("");
   const [packageId, setPackageId] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const { notifyError, success } = useToast();
-
-  // Backend only enforces the length; a non-"U" prefix is a warning, not a block.
-  const lineUserIdWarning =
-    lineUserId.trim() !== "" && !lineUserId.trim().startsWith("U");
 
   const validate = (): boolean => {
     const next: FormErrors = {};
@@ -71,15 +66,11 @@ export function RegisterBusinessModal({
       if (!max.valid) next.business_name = max.message;
     }
 
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.valid) next.email = emailCheck.message;
+
     const promptpayCheck = validatePromptPayId(promptpayId);
     if (!promptpayCheck.valid) next.promptpay_id = promptpayCheck.message;
-
-    if (lineDestination.length > 64) {
-      next.line_destination = "LINE Destination ต้องไม่เกิน 64 ตัวอักษร";
-    }
-
-    const lineUserIdMax = validateMaxLength(lineUserId.trim(), 64, "LINE User ID");
-    if (!lineUserIdMax.valid) next.line_user_id = lineUserIdMax.message;
 
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -91,14 +82,12 @@ export function RegisterBusinessModal({
 
     setSubmitting(true);
     try {
-      const trimmedLineUserId = lineUserId.trim();
       const payload: RegisterBusinessRequest = {
         username: username.trim(),
         password,
         business_name: businessName.trim(),
+        email: email.trim().toLowerCase(),
         promptpay_id: promptpayId.trim(),
-        ...(lineDestination.trim() ? { line_destination: lineDestination.trim() } : {}),
-        ...(trimmedLineUserId ? { line_user_id: trimmedLineUserId } : {}),
         ...(packageId ? { package_id: packageId } : {}),
       };
       const created = await registerBusiness(payload);
@@ -110,12 +99,6 @@ export function RegisterBusinessModal({
           ? "ผูกแพ็กเกจเริ่มต้นแล้ว — ขั้นต่อไปคือสร้าง API Key ให้ร้านค้า"
           : "ยังไม่ได้ผูกแพ็กเกจ — กรุณา Assign Package และสร้าง API Key",
         { title: "ขั้นตอนถัดไป" },
-      );
-      success(
-        created.line_user_id
-          ? "ผูก LINE User ID เริ่มต้นแล้ว"
-          : "ยังไม่ผูก LINE — ร้านค้าต้องผูกก่อนสร้าง QR รับเงิน",
-        { title: "สถานะ LINE" },
       );
       onCreated();
       onClose();
@@ -153,9 +136,9 @@ export function RegisterBusinessModal({
       }
     >
       <form id="register-business-form" onSubmit={submit} className="space-y-5">
-        <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
-          <Building2 className="mt-0.5 size-4 shrink-0 text-slate-500" />
-          <p className="text-[10px] leading-5 text-slate-500">
+        <div className="flex items-start gap-3 rounded-card border border-line bg-surface-subtle p-3.5">
+          <Building2 className="mt-0.5 size-4 shrink-0 text-ink-secondary" />
+          <p className="text-[11px] leading-5 text-ink-secondary">
             ระบบจะสร้าง User (role = business) และ Business ใน transaction เดียวกัน
             แต่จะยังไม่ออก API Key จนกว่าจะสร้างจากหน้า API Keys
           </p>
@@ -176,6 +159,25 @@ export function RegisterBusinessModal({
               placeholder="merchant_shop01"
             />
           </FormField>
+          <FormField
+            label="Email"
+            htmlFor="reg-email"
+            error={errors.email}
+            hint="ใช้ติดต่อและกู้คืนบัญชี"
+          >
+            <Input
+              id="reg-email"
+              type="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setErrors((current) => ({ ...current, email: undefined }));
+              }}
+              maxLength={255}
+              autoComplete="email"
+              placeholder="owner@coffee-shop.com"
+            />
+          </FormField>
           <FormField label="Business Name" htmlFor="reg-business-name" error={errors.business_name}>
             <Input
               id="reg-business-name"
@@ -186,6 +188,25 @@ export function RegisterBusinessModal({
               }}
               maxLength={150}
               placeholder="APay Demo Coffee Shop"
+            />
+          </FormField>
+          <FormField
+            label="PromptPay ID"
+            htmlFor="reg-promptpay"
+            error={errors.promptpay_id}
+            hint="10 หรือ 13 หลัก"
+          >
+            <Input
+              id="reg-promptpay"
+              value={promptpayId}
+              onChange={(event) => {
+                setPromptpayId(event.target.value.replace(/\D/g, ""));
+                setErrors((current) => ({ ...current, promptpay_id: undefined }));
+              }}
+              inputMode="numeric"
+              maxLength={13}
+              className="font-mono tracking-wide"
+              placeholder="0812345678"
             />
           </FormField>
           <FormField
@@ -217,74 +238,7 @@ export function RegisterBusinessModal({
               autoComplete="new-password"
             />
           </FormField>
-          <FormField
-            label="PromptPay ID"
-            htmlFor="reg-promptpay"
-            error={errors.promptpay_id}
-            hint="10 หรือ 13 หลัก"
-          >
-            <Input
-              id="reg-promptpay"
-              value={promptpayId}
-              onChange={(event) => {
-                setPromptpayId(event.target.value.replace(/\D/g, ""));
-                setErrors((current) => ({ ...current, promptpay_id: undefined }));
-              }}
-              inputMode="numeric"
-              maxLength={13}
-              className="font-mono tracking-wide"
-              placeholder="0812345678"
-            />
-          </FormField>
-          <FormField
-            label="LINE Destination"
-            htmlFor="reg-line"
-            error={errors.line_destination}
-            optional
-            hint="สูงสุด 64 ตัวอักษร"
-          >
-            <Input
-              id="reg-line"
-              value={lineDestination}
-              onChange={(event) => {
-                setLineDestination(event.target.value);
-                setErrors((current) => ({ ...current, line_destination: undefined }));
-              }}
-              maxLength={64}
-              className="font-mono text-[11px]"
-              placeholder="U1234567890abcdef..."
-            />
-          </FormField>
         </div>
-
-        <FormField
-          label="LINE User ID"
-          htmlFor="reg-line-user-id"
-          error={errors.line_user_id}
-          optional
-          hint="เว้นว่างได้ — ผูกภายหลังผ่าน QR ยืนยัน"
-        >
-          <Input
-            id="reg-line-user-id"
-            value={lineUserId}
-            onChange={(event) => {
-              setLineUserId(event.target.value);
-              setErrors((current) => ({ ...current, line_user_id: undefined }));
-            }}
-            maxLength={64}
-            className="font-mono text-[11px]"
-            placeholder="Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-            spellCheck={false}
-            autoComplete="off"
-          />
-          {lineUserIdWarning ? (
-            <p className="mt-1 flex items-start gap-1.5 text-[10px] leading-4 text-amber-700">
-              <AlertTriangle className="mt-0.5 size-3 shrink-0" />
-              LINE User ID ปกติขึ้นต้นด้วย &quot;U&quot; — ค่านี้อาจไม่ถูกต้อง
-              แต่ระบบจะบันทึกตามที่กรอก (ตรวจสอบความยาวไม่เกิน 64 ตัวอักษรเท่านั้น)
-            </p>
-          ) : null}
-        </FormField>
 
         <FormField
           label="Initial Package"
@@ -307,9 +261,9 @@ export function RegisterBusinessModal({
           </Select>
         </FormField>
 
-        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
-          <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-amber-600" />
-          <p className="text-[10px] leading-5 text-amber-800">
+        <div className="flex items-start gap-2 rounded-card border border-warning-border bg-warning-soft p-3">
+          <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-warning-ink" />
+          <p className="text-[11px] leading-5 text-warning-ink">
             หากสร้างบัญชีไม่สำเร็จ ระบบจะ Rollback ทั้ง User และ Business
             (รวมถึงการผูกแพ็กเกจ) ทั้งหมด
           </p>

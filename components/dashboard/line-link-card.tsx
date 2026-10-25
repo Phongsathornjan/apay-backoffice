@@ -28,15 +28,15 @@ export function LineLinkCard({ adminView = false }: { adminView?: boolean }) {
 
   if (adminView) {
     return (
-      <Card className="border-slate-200 bg-slate-50/60">
+      <Card className="border-line bg-surface-subtle">
         <CardBody className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-card bg-surface text-ink-secondary shadow-card">
               <Link2 className="size-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-800">การเชื่อมต่อ LINE ของร้านค้า</p>
-              <p className="mt-0.5 text-[11px] leading-5 text-slate-500">
+              <p className="text-sm font-semibold text-ink">การเชื่อมต่อ LINE ของร้านค้า</p>
+              <p className="mt-0.5 text-[11px] leading-5 text-ink-secondary">
                 สถานะ LINE ของร้านค้าถูกผูกที่ระดับธุรกิจ — ตรวจสอบหรือสร้าง QR ผูก LINE
                 ให้ร้านค้าได้จาก Payment Inspector ด้วย API Key ของร้านค้า (โหมด Raw API Key)
               </p>
@@ -58,28 +58,28 @@ export function LineLinkCard({ adminView = false }: { adminView?: boolean }) {
       <Card
         className={cn(
           isLineLinked
-            ? "border-emerald-200 bg-emerald-50/50"
-            : "border-amber-200 bg-amber-50/60",
+            ? "border-success-border bg-success-soft"
+            : "border-warning-border bg-warning-soft",
         )}
       >
         <CardBody className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-start gap-3">
             <span
               className={cn(
-                "flex size-9 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm",
-                isLineLinked ? "text-emerald-600" : "text-amber-600",
+                "flex size-9 shrink-0 items-center justify-center rounded-card bg-surface shadow-card",
+                isLineLinked ? "text-success-ink" : "text-warning-ink",
               )}
             >
               {isLineLinked ? <ShieldCheck className="size-4" /> : <ShieldAlert className="size-4" />}
             </span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-sm font-semibold text-slate-900">การเชื่อมต่อ LINE</p>
-                <Badge tone={isLineLinked ? "emerald" : "amber"} dot>
+                <p className="text-sm font-semibold text-ink">การเชื่อมต่อ LINE</p>
+                <Badge tone={isLineLinked ? "success" : "warning"} dot>
                   {isLineLinked ? "เชื่อมต่อแล้ว" : "ยังไม่เชื่อมต่อ"}
                 </Badge>
               </div>
-              <p className="mt-0.5 text-[11px] leading-5 text-slate-600">
+              <p className="mt-0.5 text-[11px] leading-5 text-ink-secondary">
                 {isLineLinked ? (
                   <>
                     LINE User ID <span className="font-mono">{maskLineUserId(lineUserId)}</span> ·
@@ -90,7 +90,7 @@ export function LineLinkCard({ adminView = false }: { adminView?: boolean }) {
                 )}
               </p>
               {!isLineLinked ? (
-                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                <p className="mt-1 text-[11px] leading-4 text-ink-secondary">
                   หากเคยผูกไว้แล้วแต่สถานะยังไม่ตรง กรุณาเข้าสู่ระบบใหม่เพื่อรับข้อมูลล่าสุด
                 </p>
               ) : null}
@@ -105,7 +105,7 @@ export function LineLinkCard({ adminView = false }: { adminView?: boolean }) {
               </Button>
             </Link>
             {isLineLinked ? (
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-emerald-700">
+              <span className="inline-flex items-center gap-1.5 rounded-control border border-success-border bg-surface px-2.5 py-1.5 text-[11px] font-semibold text-success-ink">
                 <CheckCircle2 className="size-3.5" />
                 พร้อมรับชำระ
               </span>

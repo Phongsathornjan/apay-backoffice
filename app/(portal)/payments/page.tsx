@@ -295,10 +295,10 @@ export default function PaymentsPage() {
         title="Payment Inspector"
         description="สร้าง QR ทดสอบ ตรวจสอบเศษสตางค์อ้างอิง และติดตามสถานะคำสั่งซื้อแบบเรียลไทม์"
         actions={
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[10px] text-slate-500">
+          <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 text-[11px] text-ink-secondary">
             <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-success" />
             </span>
             Live polling · ทุก 3 วินาที
           </div>
@@ -306,17 +306,17 @@ export default function PaymentsPage() {
       />
 
       {role === "business" && !isLineLinked ? (
-        <Card className="border-amber-200 bg-amber-50/60">
+        <Card className="border-warning-border bg-warning-soft">
           <CardBody className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-600 shadow-sm">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-card bg-surface text-warning-ink shadow-card">
                 <Link2 className="size-4" />
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-amber-900">
+                <p className="text-sm font-semibold text-warning-ink">
                   ยังไม่ได้ผูก LINE — ต้องผูก LINE ก่อนสร้าง QR รับเงิน
                 </p>
-                <p className="mt-0.5 text-[11px] leading-5 text-amber-800">
+                <p className="mt-0.5 text-[11px] leading-5 text-warning-ink">
                   สแกนจ่าย QR ยืนยันยอด 0.01–0.99 ด้วยบัญชีธนาคารที่ผูก LINE ไว้กับ APay
                   ระบบจะเชื่อม LINE ของคุณกับร้านค้าอัตโนมัติ
                 </p>
@@ -335,21 +335,21 @@ export default function PaymentsPage() {
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         <Card className="overflow-hidden">
-          <div className="border-b border-slate-100 px-5 py-4">
+          <div className="border-b border-line px-5 py-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                <span className="flex size-8 items-center justify-center rounded-card bg-brand-soft text-brand-ink">
                   <QrCode className="size-4" />
                 </span>
                 <div>
-                  <h2 className="text-sm font-semibold text-slate-900">สร้าง PromptPay QR</h2>
-                  <p className="text-[10px] text-slate-400">
+                  <h2 className="text-sm font-semibold text-ink">สร้าง PromptPay QR</h2>
+                  <p className="text-[11px] text-ink-muted">
                     POST /api/v1/payments/qr
                   </p>
                 </div>
               </div>
               {role === "business" && isLineLinked ? (
-                <Badge tone="emerald" dot>
+                <Badge tone="success" dot>
                   LINE linked · {maskLineUserId(lineUserId)}
                 </Badge>
               ) : null}
@@ -358,7 +358,7 @@ export default function PaymentsPage() {
 
           <CardBody className="space-y-4">
             <div>
-              <p className="mb-1.5 text-xs font-semibold text-slate-700">โหมด Authentication</p>
+              <p className="mb-1.5 text-xs font-semibold text-ink">โหมด Authentication</p>
               <SegmentedControl
                 value={tokenMode}
                 onChange={setTokenMode}
@@ -373,7 +373,7 @@ export default function PaymentsPage() {
                 className="w-full"
               />
               {isAdmin ? (
-                <p className="mt-2 rounded-lg border border-indigo-100 bg-indigo-50 px-2.5 py-2 text-[10px] leading-4 text-indigo-700">
+                <p className="mt-2 rounded-control border border-brand-border bg-brand-soft px-2.5 py-2 text-[11px] leading-4 text-brand-ink">
                   Admin ต้องใช้ Raw API Key เพื่อทดสอบในนามของร้านค้า
                   เนื่องจาก JWT ของ Admin ไม่ผูกกับธุรกิจ
                 </p>
@@ -388,7 +388,7 @@ export default function PaymentsPage() {
                 hint="ไม่ถูกบันทึกหรือส่งออกนอกเบราว์เซอร์"
               >
                 <div className="relative">
-                  <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                  <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
                   <Input
                     id="api-key-input"
                     type={showApiKey ? "text" : "password"}
@@ -406,14 +406,14 @@ export default function PaymentsPage() {
                     type="button"
                     onClick={() => setShowApiKey((value) => !value)}
                     aria-label={showApiKey ? "ซ่อน API Key" : "แสดง API Key"}
-                    className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+                    className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted"
                   >
                     {showApiKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
               </FormField>
             ) : (
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 px-3.5 py-3 text-[10px] leading-5 text-emerald-800">
+              <div className="rounded-card border border-info-border bg-info-soft px-3.5 py-3 text-[11px] leading-5 text-info-ink">
                 ระบบจะใช้ JWT ของบัญชีที่ล็อกอินอยู่
                 และคำสั่งซื้อจะไม่ผูกกับ API Key ใด (api_key_id = null)
               </div>
@@ -427,7 +427,7 @@ export default function PaymentsPage() {
                 hint="ขั้นต่ำ 1.00"
               >
                 <div className="relative">
-                  <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                  <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-ink-muted">
                     ฿
                   </span>
                   <Input
@@ -443,7 +443,7 @@ export default function PaymentsPage() {
                     className="pl-8 font-mono text-base font-semibold tabular-nums"
                   />
                 </div>
-                <p className="mt-1.5 text-[10px] leading-4 text-slate-400">
+                <p className="mt-1.5 text-[11px] leading-4 text-ink-muted">
                   ระบบจะปัดลงเป็นจำนวนเต็ม แล้วจองเศษสตางค์ .01–.99
                   เพื่อใช้จับคู่ยอดโอนโดยอัตโนมัติ
                 </p>
@@ -468,16 +468,16 @@ export default function PaymentsPage() {
                 />
               </FormField>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+              <div className="rounded-card border border-line bg-surface-subtle p-3">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-500">ยอดที่จะต้องโอนจริง</span>
-                  <span className="font-mono text-sm font-bold tabular-nums text-slate-900">
+                  <span className="text-ink-secondary">ยอดที่จะต้องโอนจริง</span>
+                  <span className="font-mono text-sm font-bold tabular-nums text-ink">
                     {amount && Number(amount) >= 1
                       ? `${formatCurrency(Math.floor(Number(amount)))} + .01–.99`
                       : "—"}
                   </span>
                 </div>
-                <p className="mt-1 text-[9px] leading-4 text-slate-400">
+                <p className="mt-1 text-[11px] leading-4 text-ink-muted">
                   ตัวอย่างเช่น ฿100.00 → ระบบอาจสร้างยอด ฿100.37
                   เพื่อไม่ให้ซ้ำกับออเดอร์อื่นในวันเดียวกัน
                 </p>
@@ -495,7 +495,7 @@ export default function PaymentsPage() {
               </Button>
 
               {lineGateActive ? (
-                <p className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[10px] leading-4 text-amber-800">
+                <p className="flex items-start gap-2 rounded-card border border-warning-border bg-warning-soft px-3 py-2.5 text-[11px] leading-4 text-warning-ink">
                   <Link2 className="mt-0.5 size-3.5 shrink-0" />
                   ยังไม่ได้ผูก LINE — ต้องผูก LINE ก่อนจึงจะสร้าง QR รับเงินได้
                   (กดปุ่ม &quot;ผูก LINE&quot; ด้านบน)
@@ -504,11 +504,11 @@ export default function PaymentsPage() {
             </form>
 
             {showAdminLinkCta ? (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5">
-                <p className="text-[11px] font-semibold text-amber-900">
+              <div className="rounded-card border border-warning-border bg-warning-soft p-3.5">
+                <p className="text-[11px] font-semibold text-warning-ink">
                   ร้านค้านี้ยังไม่ได้ผูก LINE
                 </p>
-                <p className="mt-1 text-[10px] leading-4 text-amber-800">
+                <p className="mt-1 text-[11px] leading-4 text-warning-ink">
                   สร้าง QR ยืนยันยอด 0.01–0.99 ให้ร้านค้าสแกนจ่ายด้วยบัญชีที่ผูก LINE ไว้กับ APay
                   ระบบจะผูก LINE ให้อัตโนมัติ จากนั้นจึงสร้าง QR รับเงินได้
                 </p>
@@ -524,8 +524,8 @@ export default function PaymentsPage() {
                 </Button>
               </div>
             ) : null}
-            <p className="flex items-start gap-2 text-[10px] leading-4 text-slate-400">
-              <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+            <p className="flex items-start gap-2 text-[11px] leading-4 text-ink-muted">
+              <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-brand" />
               QR มีอายุ 5 นาที และจะถูกจับคู่กับข้อความ KBank LINE
               ที่ยอดตรงกันแบบทศนิยม 2 ตำแหน่ง
             </p>
@@ -553,19 +553,19 @@ export default function PaymentsPage() {
       </div>
 
       <Card>
-        <div className="border-b border-slate-100 px-5 py-4">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <Search className="size-4 text-slate-400" />
+        <div className="border-b border-line px-5 py-4">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <Search className="size-4 text-ink-muted" />
             Order Inspector
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-ink-secondary">
             ค้นหาด้วย order_id เช่น YYYYMMDDHHmmss_100.01
           </p>
         </div>
         <CardBody className="space-y-4">
           <form onSubmit={inspect} className="flex flex-col gap-2 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
               <Input
                 value={inspectId}
                 onChange={(event) => setInspectId(event.target.value)}
@@ -584,7 +584,7 @@ export default function PaymentsPage() {
           </form>
 
           {inspectLoading ? (
-            <Skeleton className="h-40 w-full rounded-xl" />
+            <Skeleton className="h-40 w-full rounded-card" />
           ) : inspectError ? (
             <ErrorNotice
               message={inspectError instanceof Error ? inspectError.message : "ไม่พบคำสั่งซื้อ"}
@@ -672,17 +672,17 @@ function CheckoutPanel({
     return (
       <Card className="flex min-h-[360px] items-center justify-center border-dashed sm:min-h-[580px]">
         <div className="max-w-sm px-6 py-12 text-center">
-          <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-emerald-100 bg-emerald-50 text-emerald-600">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-panel border border-brand-border bg-brand-soft text-brand-ink">
             <QrCode className="size-6" />
           </div>
-          <h2 className="mt-4 text-base font-semibold text-slate-900">Checkout preview</h2>
-          <p className="mt-1.5 text-xs leading-6 text-slate-500">
+          <h2 className="mt-4 text-base font-semibold text-ink">Checkout preview</h2>
+          <p className="mt-1.5 text-xs leading-6 text-ink-secondary">
             ผลลัพธ์ QR, ยอดโอนสุทธิ, Decimal Reference และสถานะการชำระ
             จะแสดงที่นี่แบบหน้า Checkout จริง
           </p>
-          <div className="mt-5 grid grid-cols-3 gap-2 text-[9px] text-slate-400">
+          <div className="mt-5 grid grid-cols-3 gap-2 text-[11px] text-ink-muted">
             {["QR Base64", "5-min expiry", "Live status"].map((item) => (
-              <div key={item} className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-2">
+              <div key={item} className="rounded-control border border-line bg-surface-subtle px-2 py-2">
                 {item}
               </div>
             ))}
@@ -694,10 +694,10 @@ function CheckoutPanel({
 
   return (
     <Card className="overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">Checkout preview</h2>
-          <p className="font-mono text-[9px] text-slate-400">{created.order_id}</p>
+          <h2 className="text-sm font-semibold text-ink">Checkout preview</h2>
+          <p className="font-mono text-[11px] text-ink-muted">{created.order_id}</p>
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={status} />
@@ -709,101 +709,101 @@ function CheckoutPanel({
 
       <div className="relative">
         {isPaid ? (
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 bg-emerald-600 px-4 py-2 text-xs font-semibold text-white animate-success-pop">
+          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 bg-success px-4 py-2 text-xs font-semibold text-white animate-success-pop">
             <CheckCircle2 className="size-4" />
             ชำระเงินสำเร็จแล้ว
           </div>
         ) : null}
         {isExpired && !isPaid ? (
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 bg-slate-700 px-4 py-2 text-xs font-semibold text-white">
+          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 bg-ink/80 px-4 py-2 text-xs font-semibold text-white">
             <TimerReset className="size-4" />
             QR หมดอายุแล้ว
           </div>
         ) : null}
 
         <div className="grid gap-0 sm:grid-cols-[220px_1fr]">
-          <div className="flex flex-col items-center justify-center border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white p-5 sm:border-b-0 sm:border-r">
+          <div className="flex flex-col items-center justify-center border-b border-line bg-gradient-to-b from-surface-subtle to-surface p-5 sm:border-b-0 sm:border-r">
             <div
               className={cn(
-                "rounded-2xl border-4 p-2 transition-all",
+                "rounded-panel border-4 p-2 transition-all",
                 isPaid
-                  ? "border-emerald-400 bg-white shadow-[0_0_0_8px_rgba(16,185,129,0.12)]"
+                  ? "border-success bg-surface shadow-[0_0_0_8px_var(--apay-success-soft)]"
                   : isExpired
-                    ? "border-slate-300 bg-white opacity-60 grayscale"
-                    : "border-slate-900 bg-white",
+                    ? "border-line-strong bg-surface opacity-60 grayscale"
+                    : "border-ink bg-surface",
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={created.qr_image}
                 alt={`PromptPay QR for order ${created.order_id}`}
-                className="size-40 rounded-lg object-contain"
+                className="size-40 rounded-control object-contain"
               />
             </div>
-            <p className="mt-3 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
               PromptPay · Thai QR
             </p>
-            <div className="mt-2 flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-medium text-slate-500">
-              <Clock3 className="size-3 text-amber-500" />
+            <div className="mt-2 flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
+              <Clock3 className="size-3 text-warning" />
               {isPaid ? "ชำระแล้ว" : isExpired ? "หมดอายุ" : `เหลือ ${formatCountdown(remaining)}`}
             </div>
           </div>
 
           <div className="p-5">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted">
                 ยอดโอนสุทธิ
               </p>
-              <Badge tone="amber">ต้องโอนให้ตรงทศนิยม</Badge>
+              <Badge tone="warning">ต้องโอนให้ตรงทศนิยม</Badge>
             </div>
-            <p className="mt-1 font-mono text-[38px] font-bold leading-none tracking-tight tabular-nums text-slate-950">
+            <p className="mt-1 font-mono text-[38px] font-bold leading-none tracking-tight tabular-nums text-ink">
               {formatCurrency(created.total_amount)}
             </p>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] text-slate-500">
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-ink-secondary">
               <span>
-                base <span className="font-semibold text-slate-700">{formatCurrency(created.base_amount)}</span>
+                base <span className="font-semibold text-ink">{formatCurrency(created.base_amount)}</span>
               </span>
               <span>
                 decimal_ref{" "}
-                <span className="font-semibold text-amber-700">
+                <span className="font-semibold text-warning-ink">
                   +{created.decimal_ref.toFixed(2)}
                 </span>
               </span>
             </div>
 
-            <div className="mt-4 space-y-2 border-t border-slate-100 pt-3">
+            <div className="mt-4 space-y-2 border-t border-line pt-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[10px] text-slate-400">order_id</span>
+                <span className="text-[11px] text-ink-muted">order_id</span>
                 <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate font-mono text-[10px] text-slate-600">
+                  <span className="truncate font-mono text-[11px] text-ink-secondary">
                     {created.order_id}
                   </span>
                   <CopyButton value={created.order_id} iconOnly label="คัดลอก order id" />
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[10px] text-slate-400">lookup_key</span>
+                <span className="text-[11px] text-ink-muted">lookup_key</span>
                 <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate font-mono text-[10px] text-slate-600">
+                  <span className="truncate font-mono text-[11px] text-ink-secondary">
                     {created.lookup_key}
                   </span>
                   <CopyButton value={created.lookup_key} iconOnly label="คัดลอก lookup key" />
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[10px] text-slate-400">หมดอายุ</span>
-                <span className="font-mono text-[10px] text-slate-600">
+                <span className="text-[11px] text-ink-muted">หมดอายุ</span>
+                <span className="font-mono text-[11px] text-ink-secondary">
                   {formatDateTime(created.expires_at)} · {formatTime(created.expires_at)}
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+            <div className="mt-4 rounded-card border border-line bg-surface-subtle p-3">
               <div className="flex items-center justify-between">
-                <p className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-600">
+                <p className="flex items-center gap-1.5 text-[11px] font-semibold text-ink-secondary">
                   <Loader2
                     className={cn(
-                      "size-3 text-emerald-500",
+                      "size-3 text-brand",
                       status === "UNVERIFIED" && !isExpired ? "animate-spin" : "hidden",
                     )}
                   />
@@ -819,25 +819,25 @@ function CheckoutPanel({
                   onClick={onRefresh}
                   loading={checkingOrder}
                   icon={<RefreshCw className="size-3" />}
-                  className="h-7 px-2 text-[10px]"
+                  className="h-7 px-2 text-[11px]"
                 >
                   ตรวจตอนนี้
                 </Button>
               </div>
               {lastChecked ? (
-                <p className="mt-1 font-mono text-[9px] text-slate-400">
+                <p className="mt-1 font-mono text-[11px] text-ink-muted">
                   last checked {formatTime(lastChecked.toISOString())}
                 </p>
               ) : null}
               {pollError ? (
-                <p className="mt-1 text-[9px] text-rose-600">{pollError}</p>
+                <p className="mt-1 text-[11px] text-danger-ink">{pollError}</p>
               ) : null}
             </div>
 
             {detailed ? (
               <OrderTimeline detail={detailed} />
             ) : (
-              <p className="mt-3 text-center text-[9px] leading-4 text-slate-400">
+              <p className="mt-3 text-center text-[11px] leading-4 text-ink-muted">
                 สถานะจะอัปเดตอัตโนมัติจากการ polling ทุก 3 วินาที
               </p>
             )}
@@ -850,34 +850,34 @@ function CheckoutPanel({
 
 function OrderTimeline({ detail }: { detail: PaymentOrderDetailData }) {
   return (
-    <div className="mt-4 space-y-2 border-t border-slate-100 pt-3">
-      <div className="flex items-center justify-between text-[10px]">
-        <span className="flex items-center gap-1.5 text-slate-500">
+    <div className="mt-4 space-y-2 border-t border-line pt-3">
+      <div className="flex items-center justify-between text-[11px]">
+        <span className="flex items-center gap-1.5 text-ink-secondary">
           <span
             className={cn(
               "size-1.5 rounded-full",
-              detail.status === "PAID" ? "bg-emerald-500" : "bg-amber-500",
+              detail.status === "PAID" ? "bg-success" : "bg-warning",
             )}
           />
           {detail.status}
         </span>
-        <span className="font-mono text-slate-600">
+        <span className="font-mono text-ink-secondary">
           {detail.paid_at ? formatDateTime(detail.paid_at) : "ยังไม่ชำระ"}
         </span>
       </div>
-      <div className="flex items-center justify-between text-[10px]">
-        <span className="flex items-center gap-1.5 text-slate-500">
+      <div className="flex items-center justify-between text-[11px]">
+        <span className="flex items-center gap-1.5 text-ink-secondary">
           <Clock3 className="size-3" />
           ตรวจสอบสถานะล่าสุด
         </span>
-        <span className="font-mono text-slate-600">polling</span>
+        <span className="font-mono text-ink-secondary">polling</span>
       </div>
-      <div className="flex items-center justify-between text-[10px]">
-        <span className="flex items-center gap-1.5 text-slate-500">
+      <div className="flex items-center justify-between text-[11px]">
+        <span className="flex items-center gap-1.5 text-ink-secondary">
           <Link2 className="size-3" />
           LINE User ID
         </span>
-        <span className="font-mono text-[9px] text-slate-600">
+        <span className="font-mono text-[11px] text-ink-secondary">
           {maskLineUserId(detail.line_user_id)}
         </span>
       </div>
@@ -888,79 +888,79 @@ function OrderTimeline({ detail }: { detail: PaymentOrderDetailData }) {
 function OrderDetail({ inspected }: { inspected: PaymentOrderDetailData }) {
   return (
     <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
-      <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+      <div className="rounded-card border border-line bg-surface-subtle p-4">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-slate-800">Order status</p>
+          <p className="text-xs font-semibold text-ink">Order status</p>
           <StatusBadge status={inspected.status} />
         </div>
-        <p className="mt-3 font-mono text-2xl font-bold tabular-nums text-slate-900">
+        <p className="mt-3 font-mono text-2xl font-bold tabular-nums text-ink">
           {formatCurrency(inspected.total_amount)}
         </p>
-        <p className="mt-1 font-mono text-[10px] text-slate-500">
+        <p className="mt-1 font-mono text-[11px] text-ink-secondary">
           {formatCurrency(inspected.base_amount)} + {inspected.decimal_ref.toFixed(2)}
         </p>
-        <dl className="mt-4 space-y-2 text-[10px]">
+        <dl className="mt-4 space-y-2 text-[11px]">
           <div className="flex justify-between gap-3">
-            <dt className="text-slate-400">order_id</dt>
-            <dd className="max-w-[65%] truncate font-mono text-slate-600">{inspected.order_id}</dd>
+            <dt className="text-ink-muted">order_id</dt>
+            <dd className="max-w-[65%] truncate font-mono text-ink-secondary">{inspected.order_id}</dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-slate-400">lookup_key</dt>
-            <dd className="font-mono text-slate-600">{inspected.lookup_key}</dd>
+            <dt className="text-ink-muted">lookup_key</dt>
+            <dd className="font-mono text-ink-secondary">{inspected.lookup_key}</dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-slate-400">created_at</dt>
-            <dd className="font-mono text-slate-600">{formatDateTime(inspected.created_at)}</dd>
+            <dt className="text-ink-muted">created_at</dt>
+            <dd className="font-mono text-ink-secondary">{formatDateTime(inspected.created_at)}</dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-slate-400">paid_at</dt>
-            <dd className="font-mono text-slate-600">
+            <dt className="text-ink-muted">paid_at</dt>
+            <dd className="font-mono text-ink-secondary">
               {inspected.paid_at ? formatDateTime(inspected.paid_at) : "—"}
             </dd>
           </div>
         </dl>
       </div>
-      <div className="rounded-xl border border-slate-200 p-4">
-        <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
-          <Clock3 className="size-3.5 text-indigo-500" />
+      <div className="rounded-card border border-line p-4">
+        <p className="flex items-center gap-1.5 text-xs font-semibold text-ink">
+          <Clock3 className="size-3.5 text-brand" />
           Payment details
         </p>
-        <div className="mt-3 space-y-2.5 text-[10px]">
+        <div className="mt-3 space-y-2.5 text-[11px]">
           <div className="flex items-center justify-between">
-            <span className="text-slate-400">status</span>
+            <span className="text-ink-muted">status</span>
             <StatusBadge status={inspected.status} />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-400">expires_at</span>
-            <span className="font-mono text-slate-600">{formatDateTime(inspected.expires_at)}</span>
+            <span className="text-ink-muted">expires_at</span>
+            <span className="font-mono text-ink-secondary">{formatDateTime(inspected.expires_at)}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-400">is_line_link</span>
-            <Badge tone={inspected.is_line_link ? "indigo" : "slate"}>
+            <span className="text-ink-muted">is_line_link</span>
+            <Badge tone={inspected.is_line_link ? "brand" : "neutral"}>
               {inspected.is_line_link ? "true" : "false"}
             </Badge>
           </div>
           <div>
-            <span className="text-slate-400">line_user_id</span>
-            <p className="mt-1 break-all rounded-lg bg-slate-50 p-2 font-mono text-[9px] leading-4 text-slate-600">
+            <span className="text-ink-muted">line_user_id</span>
+            <p className="mt-1 break-all rounded-control bg-surface-subtle p-2 font-mono text-[11px] leading-4 text-ink-secondary">
               {maskLineUserId(inspected.line_user_id)}
             </p>
           </div>
           <div>
-            <span className="text-slate-400">business_id</span>
-            <p className="mt-1 break-all rounded-lg bg-slate-50 p-2 font-mono text-[9px] leading-4 text-slate-600">
+            <span className="text-ink-muted">business_id</span>
+            <p className="mt-1 break-all rounded-control bg-surface-subtle p-2 font-mono text-[11px] leading-4 text-ink-secondary">
               {inspected.business_id}
             </p>
           </div>
         </div>
         {inspected.is_line_link ? (
-          <div className="mt-3 flex items-start gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-2 text-[10px] leading-4 text-indigo-800">
+          <div className="mt-3 flex items-start gap-1.5 rounded-control border border-brand-border bg-brand-soft px-2.5 py-2 text-[11px] leading-4 text-brand-ink">
             <Link2 className="mt-0.5 size-3.5 shrink-0" />
             คำสั่งซื้อนี้ใช้ผูก LINE (ยอด 0.01–0.99) — ไม่ตัดโควต้า
             และตรวจพบผลด้วย polling สถานะทุก 3 วินาที
           </div>
         ) : inspected.status === "PAID" ? (
-          <div className="mt-3 flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-[10px] font-medium text-emerald-700">
+          <div className="mt-3 flex items-center gap-1.5 rounded-control border border-success-border bg-success-soft px-2.5 py-2 text-[11px] font-medium text-success-ink">
             <CheckCircle2 className="size-3.5" />
             ยืนยันการชำระเงินจากการ polling สถานะแล้ว
           </div>

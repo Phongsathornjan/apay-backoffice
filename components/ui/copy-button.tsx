@@ -23,12 +23,12 @@ export function CopyButton({
       onClick={() => void copy(value)}
       aria-label={label}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50",
+        "inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-2.5 py-1.5 text-xs font-semibold text-ink-secondary transition hover:border-line-strong hover:bg-surface-subtle hover:text-ink",
         className,
       )}
     >
       {copied ? (
-        <Check className="size-3.5 text-emerald-600" />
+        <Check className="size-3.5 text-success-ink" />
       ) : (
         <Copy className="size-3.5" />
       )}

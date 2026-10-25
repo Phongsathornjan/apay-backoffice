@@ -56,12 +56,13 @@ import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorNotice } from "@/components/ui/toast";
 import { Skeleton, KpiSkeleton, ChartSkeleton } from "@/components/ui/skeleton";
+import { SEMANTIC_COLORS } from "@/lib/chart-colors";
 import { cn } from "@/lib/utils";
 
 const SUBSCRIPTION_COLORS: Record<string, string> = {
-  ACTIVE: "#10b981",
-  PAST_DUE: "#f43f5e",
-  CANCELLED: "#94a3b8",
+  ACTIVE: SEMANTIC_COLORS.success,
+  PAST_DUE: SEMANTIC_COLORS.warning,
+  CANCELLED: SEMANTIC_COLORS.neutral,
 };
 
 export default function AdminDashboardPage() {
@@ -157,7 +158,7 @@ export default function AdminDashboardPage() {
     distribution?.subscription_status.map((item) => ({
       name: item.status,
       value: item.count,
-      color: SUBSCRIPTION_COLORS[item.status] ?? "#94a3b8",
+      color: SUBSCRIPTION_COLORS[item.status] ?? SEMANTIC_COLORS.neutral,
     })) ?? [];
 
   const quotaDistribution =
@@ -166,10 +167,10 @@ export default function AdminDashboardPage() {
       value: item.count,
       color:
         item.bucket === "76-100" || item.bucket === "100+"
-          ? "#f43f5e"
+          ? SEMANTIC_COLORS.danger
           : item.bucket === "51-75"
-            ? "#f59e0b"
-            : "#10b981",
+            ? SEMANTIC_COLORS.warning
+            : SEMANTIC_COLORS.brand,
     })) ?? [];
 
   const paidRate = overview.platform.paid_rate;
@@ -184,7 +185,7 @@ export default function AdminDashboardPage() {
         description={
           <span className="flex flex-wrap items-center gap-2">
             <span>Executive analytics · ข้อมูลทั้งแพลตฟอร์ม · Asia/Bangkok</span>
-            <Badge tone="indigo">{range.interval.toUpperCase()}</Badge>
+            <Badge tone="brand">{range.interval.toUpperCase()}</Badge>
           </span>
         }
         actions={
@@ -217,21 +218,21 @@ export default function AdminDashboardPage() {
           value={formatCurrency(overview.estimated_mrr)}
           hint="รายได้แพ็กเกจประจำเดือนโดยประมาณ"
           icon={TrendingUp}
-          tone="emerald"
+          tone="brand"
         />
         <KpiCard
           label="Estimated ARR"
           value={formatCurrency(overview.estimated_arr)}
           hint="Annualized run-rate จากแพ็กเกจที่ใช้งาน"
           icon={Wallet}
-          tone="indigo"
+          tone="brand"
         />
         <KpiCard
           label="Platform GMV"
           value={formatCurrency(overview.platform.gmv)}
           hint={`AOV ${formatCurrency(overview.platform.average_order_value)} · Paid rate ${formatPercent(paidRate)}`}
           icon={ReceiptText}
-          tone="emerald"
+          tone="info"
         />
         <KpiCard
           label="Webhook Match Rate"
@@ -240,11 +241,11 @@ export default function AdminDashboardPage() {
             overview.webhook.no_match,
           )}`}
           icon={Webhook}
-          tone={overview.webhook.match_rate < 0.8 ? "amber" : "emerald"}
+          tone={overview.webhook.match_rate < 0.8 ? "warning" : "success"}
           footer={
             <Progress
               value={overview.webhook.match_rate * 100}
-              tone={overview.webhook.match_rate < 0.8 ? "amber" : "emerald"}
+              tone={overview.webhook.match_rate < 0.8 ? "warning" : "success"}
             />
           }
         />
@@ -258,7 +259,7 @@ export default function AdminDashboardPage() {
             overview.businesses.new_in_range,
           )} ในช่วงนี้`}
           icon={Building2}
-          tone="slate"
+          tone="neutral"
         />
         <KpiCard
           label="Active Subscriptions"
@@ -267,16 +268,16 @@ export default function AdminDashboardPage() {
             overview.subscriptions.cancelled,
           )}`}
           icon={CreditCard}
-          tone="emerald"
+          tone="success"
         />
         <KpiCard
           label="Expiring Soon"
           value={`${formatNumber(expiring7)} / ${formatNumber(expiring30)}`}
           hint="ภายใน 7 วัน / 30 วัน"
           icon={CalendarClock}
-          tone={expiring7 > 0 ? "amber" : "slate"}
+          tone={expiring7 > 0 ? "warning" : "neutral"}
           footer={
-            <div className="flex items-center gap-1 text-[10px] font-medium text-amber-700">
+            <div className="flex items-center gap-1 text-[11px] font-medium text-warning-ink">
               <AlertTriangle className="size-3" />
               ต้องติดตามการต่ออายุ
             </div>
@@ -291,44 +292,44 @@ export default function AdminDashboardPage() {
             overview.platform.paid_count,
           )} · Expired ${formatNumber(overview.platform.expired_count)}`}
           icon={QrCode}
-          tone="indigo"
+          tone="brand"
         />
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div>
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <AlertTriangle className="size-4 text-amber-500" />
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <AlertTriangle className="size-4 text-warning" />
               Actionable Alerts
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-ink-secondary">
               ร้านค้าที่ใกล้หมดอายุหรือใกล้ใช้โควต้าเต็ม — ต่ออายุ/อัปเกรดได้ทันที
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
-              <span className="text-[10px] font-medium text-slate-500">หมดอายุใน</span>
+            <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-2.5 py-1.5">
+              <span className="text-[11px] font-medium text-ink-secondary">หมดอายุใน</span>
               <input
                 type="range"
                 min={1}
                 max={90}
                 value={expiringDays}
                 onChange={(event) => setExpiringDays(Number(event.target.value))}
-                className="h-1.5 w-24 accent-emerald-600"
+                className="h-1.5 w-24 accent-brand"
                 aria-label="จำนวนวันล่วงหน้าที่ต้องการแจ้งเตือน"
               />
-              <span className="min-w-9 font-mono text-[10px] font-semibold text-slate-700">
+              <span className="min-w-9 font-mono text-[11px] font-semibold text-ink">
                 {expiringDays} วัน
               </span>
             </div>
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
-              <span className="text-[10px] font-medium text-slate-500">Near quota</span>
+            <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-2.5 py-1.5">
+              <span className="text-[11px] font-medium text-ink-secondary">Near quota</span>
               <select
                 value={quotaThreshold}
                 onChange={(event) => setQuotaThreshold(Number(event.target.value))}
                 aria-label="เกณฑ์โควต้าใกล้เต็ม"
-                className="bg-transparent text-[10px] font-semibold text-slate-700 outline-none"
+                className="bg-transparent text-[11px] font-semibold text-ink outline-none"
               >
                 {[0.5, 0.7, 0.8, 0.9, 1].map((value) => (
                   <option key={value} value={value}>
@@ -356,45 +357,45 @@ export default function AdminDashboardPage() {
           </div>
         ) : expiring.isLoading || !expiringData ? (
           <div className="grid gap-3 p-4 lg:grid-cols-2">
-            <Skeleton className="h-52 w-full rounded-xl" />
-            <Skeleton className="h-52 w-full rounded-xl" />
+            <Skeleton className="h-52 w-full rounded-card" />
+            <Skeleton className="h-52 w-full rounded-card" />
           </div>
         ) : (
-          <div className="grid divide-y divide-slate-100 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
+          <div className="grid divide-y divide-line lg:grid-cols-2 lg:divide-x lg:divide-y-0">
             <AlertTable
               title="ใกล้หมดอายุ"
               count={expiringData.expiring.length}
-              tone="amber"
+              tone="warning"
               emptyText="ไม่มีร้านค้าที่ใกล้หมดอายุในช่วงนี้"
             >
               {expiringData.expiring.map((item) => (
-                <tr key={item.subscription_id} className="hover:bg-slate-50/60">
+                <tr key={item.subscription_id} className="hover:bg-surface-subtle">
                   <td className="px-4 py-3">
-                    <p className="max-w-[150px] truncate text-xs font-semibold text-slate-800">
+                    <p className="max-w-[150px] truncate text-xs font-semibold text-ink">
                       {item.business_name}
                     </p>
                     <StatusBadge status={item.status} />
                   </td>
                   <td className="px-3 py-3">
-                    <p className="text-[10px] text-slate-600">
+                    <p className="text-[11px] text-ink-secondary">
                       {formatDate(item.current_period_end)}
                     </p>
-                    <p className="mt-0.5 text-[9px] font-semibold text-amber-600">
+                    <p className="mt-0.5 text-[11px] font-semibold text-warning-ink">
                       เหลือ {item.days_remaining} วัน
                     </p>
                   </td>
                   <td className="px-3 py-3 text-right">
-                    <p className="font-mono text-[10px] text-slate-600">
+                    <p className="font-mono text-[11px] text-ink-secondary">
                       {formatNumber(item.quota_remaining)} / {formatNumber(item.quota_limit)}
                     </p>
-                    <p className="text-[9px] text-slate-400">quota left</p>
+                    <p className="text-[11px] text-ink-muted">quota left</p>
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center justify-end gap-1">
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 px-2 text-[10px]"
+                        className="h-7 px-2 text-[11px]"
                         onClick={() =>
                           setRenewTarget({
                             subscriptionId: item.subscription_id,
@@ -408,7 +409,7 @@ export default function AdminDashboardPage() {
                         type="button"
                         onClick={() => openBusiness(item.business_id, item.business_name)}
                         aria-label={`ดู ${item.business_name}`}
-                        className="flex size-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                        className="flex size-8 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted hover:text-ink"
                       >
                         <Eye className="size-3.5" />
                       </button>
@@ -421,13 +422,13 @@ export default function AdminDashboardPage() {
             <AlertTable
               title="โควต้าใกล้เต็ม"
               count={expiringData.near_quota.length}
-              tone="rose"
+              tone="danger"
               emptyText={`ไม่มีร้านค้าที่ใช้โควต้าเกิน ${Math.round(quotaThreshold * 100)}%`}
             >
               {expiringData.near_quota.map((item) => (
-                <tr key={item.subscription_id} className="hover:bg-slate-50/60">
+                <tr key={item.subscription_id} className="hover:bg-surface-subtle">
                   <td className="px-4 py-3">
-                    <p className="max-w-[150px] truncate text-xs font-semibold text-slate-800">
+                    <p className="max-w-[150px] truncate text-xs font-semibold text-ink">
                       {item.business_name}
                     </p>
                     <StatusBadge status={item.status} />
@@ -436,29 +437,29 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-2">
                       <Progress
                         value={item.utilization * 100}
-                        tone={item.utilization >= 0.9 ? "rose" : "amber"}
+                        tone={item.utilization >= 0.9 ? "danger" : "warning"}
                         className="h-1.5"
                       />
-                      <span className="w-10 text-right font-mono text-[10px] font-semibold text-slate-600">
+                      <span className="w-10 text-right font-mono text-[11px] font-semibold text-ink-secondary">
                         {formatPercent(item.utilization, 0)}
                       </span>
                     </div>
-                    <p className="mt-1 font-mono text-[9px] text-slate-400">
+                    <p className="mt-1 font-mono text-[11px] text-ink-muted">
                       {formatNumber(item.quota_used)} / {formatNumber(item.quota_limit)}
                     </p>
                   </td>
                   <td className="px-3 py-3 text-right">
-                    <p className="font-mono text-[10px] text-slate-600">
+                    <p className="font-mono text-[11px] text-ink-secondary">
                       {formatNumber(item.quota_remaining)}
                     </p>
-                    <p className="text-[9px] text-slate-400">remaining</p>
+                    <p className="text-[11px] text-ink-muted">remaining</p>
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center justify-end gap-1">
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 px-2 text-[10px]"
+                        className="h-7 px-2 text-[11px]"
                         onClick={() =>
                           setRenewTarget({
                             subscriptionId: item.subscription_id,
@@ -472,7 +473,7 @@ export default function AdminDashboardPage() {
                         type="button"
                         onClick={() => openBusiness(item.business_id, item.business_name)}
                         aria-label={`ดู ${item.business_name}`}
-                        className="flex size-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                        className="flex size-8 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted hover:text-ink"
                       >
                         <Eye className="size-3.5" />
                       </button>
@@ -483,7 +484,7 @@ export default function AdminDashboardPage() {
             </AlertTable>
           </div>
         )}
-        <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-2 text-[9px] text-slate-400">
+        <div className="border-t border-line bg-surface-subtle px-4 py-2 text-[11px] text-ink-muted">
           อัปเดตอัตโนมัติตามตัวกรอง · ข้อมูล Usage จาก Subscription API
         </div>
       </Card>
@@ -554,12 +555,12 @@ export default function AdminDashboardPage() {
             {statusDistribution.map((item) => (
               <div
                 key={item.name}
-                className="rounded-lg border border-slate-100 bg-slate-50/60 p-2 text-center"
+                className="rounded-control border border-line bg-surface-subtle p-2 text-center"
               >
-                <p className="font-mono text-sm font-semibold tabular-nums text-slate-700">
+                <p className="font-mono text-sm font-semibold tabular-nums text-ink">
                   {formatNumber(item.value)}
                 </p>
-                <p className="mt-0.5 truncate text-[8px] font-medium uppercase tracking-wide text-slate-400">
+                <p className="mt-0.5 truncate text-[11px] font-medium uppercase tracking-wide text-ink-muted">
                   {item.name}
                 </p>
               </div>
@@ -587,17 +588,17 @@ export default function AdminDashboardPage() {
         ].map((item) => (
           <div
             key={item.label}
-            className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3"
+            className="flex items-center justify-between rounded-card border border-line bg-surface px-4 py-3"
           >
             <div>
-              <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                 {item.label}
               </p>
-              <p className="mt-1 font-mono text-lg font-bold tabular-nums text-slate-900">
+              <p className="mt-1 font-mono text-lg font-bold tabular-nums text-ink">
                 {formatNumber(item.value)}
               </p>
             </div>
-            <item.icon className="size-4 text-slate-300" />
+            <item.icon className="size-4 text-ink-muted" />
           </div>
         ))}
       </div>
@@ -629,23 +630,23 @@ function AlertTable({
 }: {
   title: string;
   count: number;
-  tone: "amber" | "rose";
+  tone: "warning" | "danger";
   emptyText: string;
   children: ReactNode;
 }) {
   return (
     <div className="min-w-0">
       <div className="flex items-center justify-between px-4 pb-1 pt-3.5">
-        <p className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-700">
+        <p className="flex items-center gap-1.5 text-[11px] font-semibold text-ink">
           <span
             className={cn(
               "size-1.5 rounded-full",
-              tone === "amber" ? "bg-amber-500" : "bg-rose-500",
+              tone === "warning" ? "bg-warning" : "bg-danger",
             )}
           />
           {title}
         </p>
-        <Badge tone={tone === "amber" ? "amber" : "rose"}>{formatNumber(count)}</Badge>
+        <Badge tone={tone}>{formatNumber(count)}</Badge>
       </div>
       {count === 0 ? (
         <EmptyState
@@ -658,14 +659,14 @@ function AlertTable({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[440px] text-left">
             <thead>
-              <tr className="text-[8px] font-semibold uppercase tracking-wide text-slate-400">
+              <tr className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                 <th className="px-4 py-2">Business</th>
                 <th className="px-3 py-2">Period / Usage</th>
                 <th className="px-3 py-2 text-right">Quota</th>
                 <th className="px-3 py-2 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">{children}</tbody>
+            <tbody className="divide-y divide-line">{children}</tbody>
           </table>
         </div>
       )}

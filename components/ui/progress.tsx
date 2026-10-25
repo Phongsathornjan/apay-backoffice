@@ -1,17 +1,19 @@
 import { cn } from "@/lib/utils";
 
-export type ProgressTone = "emerald" | "amber" | "rose" | "indigo";
+export type ProgressTone = "brand" | "success" | "warning" | "danger" | "info" | "neutral";
 
 const BAR_TONES: Record<ProgressTone, string> = {
-  emerald: "bg-emerald-500",
-  amber: "bg-amber-500",
-  rose: "bg-rose-500",
-  indigo: "bg-indigo-500",
+  brand: "bg-brand",
+  success: "bg-success",
+  warning: "bg-warning",
+  danger: "bg-danger",
+  info: "bg-info",
+  neutral: "bg-ink-muted",
 };
 
 export function Progress({
   value,
-  tone = "emerald",
+  tone = "brand",
   className,
   ariaLabel,
 }: {
@@ -23,7 +25,7 @@ export function Progress({
   const width = Math.max(0, Math.min(100, value));
   return (
     <div
-      className={cn("h-1.5 w-full overflow-hidden rounded-full bg-slate-100", className)}
+      className={cn("h-1.5 w-full overflow-hidden rounded-full bg-surface-muted", className)}
       role="progressbar"
       aria-label={ariaLabel}
       aria-valuemin={0}

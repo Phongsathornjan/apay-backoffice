@@ -38,6 +38,7 @@ import { SubscriptionBanner } from "@/components/dashboard/subscription-banner";
 import { LineLinkCard } from "@/components/dashboard/line-link-card";
 import { DateRangePicker } from "@/components/dashboard/date-range-picker";
 import { ChartCard } from "@/components/charts/chart-card";
+import { STATUS_COLORS } from "@/lib/chart-colors";
 import {
   CHART_COLORS,
   ChartLegend,
@@ -130,18 +131,18 @@ export default function MerchantDashboardPage() {
 
   const statusData = statusBreakdown
     ? [
-        { name: "PAID", value: statusBreakdown.PAID, color: "#10b981" },
+        { name: "PAID", value: statusBreakdown.PAID, color: STATUS_COLORS.paid },
         {
           name: "UNVERIFIED · active",
           value: statusBreakdown.UNVERIFIED.active,
-          color: "#f59e0b",
+          color: STATUS_COLORS.unverifiedActive,
         },
         {
           name: "UNVERIFIED · expired",
           value: statusBreakdown.UNVERIFIED.expired,
-          color: "#94a3b8",
+          color: STATUS_COLORS.unverifiedExpired,
         },
-        { name: "EXPIRED", value: statusBreakdown.EXPIRED, color: "#f43f5e" },
+        { name: "EXPIRED", value: statusBreakdown.EXPIRED, color: STATUS_COLORS.expired },
       ]
     : [];
 
@@ -187,7 +188,7 @@ export default function MerchantDashboardPage() {
           description="กำลังโหลดข้อมูลล่าสุด..."
           actions={<DateRangePicker value={range} onChange={setRange} />}
         />
-        <Skeleton className="h-[166px] w-full rounded-2xl" />
+        <Skeleton className="h-[166px] w-full rounded-panel" />
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <KpiSkeleton key={index} />
@@ -220,8 +221,8 @@ export default function MerchantDashboardPage() {
           <span className="flex flex-wrap items-center gap-2">
             <span>ข้อมูลช่วง {range.interval === "hour" ? "รายชั่วโมง" : "รายวัน"} · เขตเวลาไทย</span>
             {subscription ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-500">
-                <ShieldCheck className="size-3 text-emerald-600" />
+              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-medium text-ink-secondary">
+                <ShieldCheck className="size-3 text-success-ink" />
                 {subscription.package_name}
               </span>
             ) : null}
@@ -257,14 +258,14 @@ export default function MerchantDashboardPage() {
           value={formatCurrency(transactions?.gmv)}
           hint={`จาก ${formatNumber(transactions?.paid_count)} รายการที่ชำระสำเร็จ`}
           icon={Wallet}
-          tone="emerald"
+          tone="brand"
         />
         <KpiCard
           label="ค่าเฉลี่ยต่อบิล"
           value={formatCurrency(transactions?.average_order_value)}
           hint={`Paid rate ${formatPercent(transactions?.paid_rate)}`}
           icon={ReceiptText}
-          tone="indigo"
+          tone="info"
         />
         <KpiCard
           label="รายการทั้งหมด"
@@ -273,25 +274,18 @@ export default function MerchantDashboardPage() {
             transactions?.expired_count,
           )} · Active ${formatNumber(transactions?.active_unverified_count)}`}
           icon={Banknote}
-          tone="amber"
+          tone="neutral"
         />
         <KpiCard
           label="ชำระเงินสำเร็จ"
           value={`${formatNumber(usageData?.qr_paid)}`}
           hint={`คิดเป็น ${(usageData?.qr_paid ?? 0) / Math.max(transactions?.orders_created ?? 1, 1) * 100}% ของรายการทั้งหมด`}
           icon={QrCode}
-          tone="emerald"
+          tone="success"
         />
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="โควต้าคงเหลือ"
-          value={
-            subscription
-              ? formatNumber(subscription.quota_remaining)
-              : "—"
-          }
+          value={subscription ? formatNumber(subscription.quota_remaining) : "—"}
           hint={
             subscription
               ? `ใช้ไป ${formatPercent(quotaRatio)} ของ ${formatNumber(
@@ -300,7 +294,7 @@ export default function MerchantDashboardPage() {
               : "ยังไม่มีแพ็กเกจที่ใช้งาน"
           }
           icon={CreditCard}
-          tone={quotaRatio >= 0.8 ? "rose" : quotaRatio >= 0.5 ? "amber" : "emerald"}
+          tone={quotaRatio >= 0.8 ? "danger" : quotaRatio >= 0.5 ? "warning" : "brand"}
           footer={
             subscription ? (
               <Progress value={quotaRatio * 100} tone={quotaTone(quotaRatio)} />
@@ -314,8 +308,8 @@ export default function MerchantDashboardPage() {
           )}`}
           hint={`Active ${formatNumber(overview.api_keys.active)} คีย์`}
           icon={KeyRound}
-          tone="indigo"
-          footer={<Progress value={overview.api_keys.max ? (overview.api_keys.used / overview.api_keys.max) * 100 : 0} tone="indigo" />}
+          tone="brand"
+          footer={<Progress value={overview.api_keys.max ? (overview.api_keys.used / overview.api_keys.max) * 100 : 0} tone="brand" />}
         />
         <KpiCard
           label="Rate Limit ชั่วโมงล่าสุด"
@@ -326,7 +320,7 @@ export default function MerchantDashboardPage() {
             overview.rate_limit.remaining,
           )} คำขอ`}
           icon={Activity}
-          tone={overview.rate_limit.utilization >= 0.8 ? "rose" : "slate"}
+          tone={overview.rate_limit.utilization >= 0.8 ? "danger" : "neutral"}
           footer={<Progress value={overview.rate_limit.utilization * 100} tone={quotaTone(overview.rate_limit.utilization)} />}
         />
         <KpiCard
@@ -334,11 +328,11 @@ export default function MerchantDashboardPage() {
           value={formatNumber(overview.webhook.matched)}
           hint="รายการ KBank LINE ที่ยืนยันยอดและเปลี่ยนเป็น PAID"
           icon={Webhook}
-          tone="emerald"
+          tone="success"
           footer={
             <Link
               href="/payments"
-              className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 hover:text-emerald-800"
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-ink hover:text-brand"
             >
               เปิด Payment Inspector
               <ArrowUpRight className="size-3" />
@@ -375,13 +369,13 @@ export default function MerchantDashboardPage() {
             {statusData.map((item) => (
               <div
                 key={item.name}
-                className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/50 px-2.5 py-2"
+                className="flex items-center justify-between gap-2 rounded-control border border-line bg-surface-subtle px-2.5 py-2"
               >
-                <span className="flex min-w-0 items-center gap-1.5 text-[10px] text-slate-500">
+                <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-ink-secondary">
                   <span className="size-1.5 shrink-0 rounded-full" style={{ background: item.color }} />
                   <span className="truncate">{item.name}</span>
                 </span>
-                <span className="font-mono text-[10px] font-semibold tabular-nums text-slate-700">
+                <span className="font-mono text-[11px] font-semibold tabular-nums text-ink">
                   {formatNumber(item.value)}
                 </span>
               </div>
@@ -423,17 +417,17 @@ export default function MerchantDashboardPage() {
                 : undefined
             }
           />
-          <div className="mx-4 mb-1 grid grid-cols-3 gap-2 border-t border-slate-100 pt-3">
+          <div className="mx-4 mb-1 grid grid-cols-3 gap-2 border-t border-line pt-3">
             {[
               { label: "Requests", value: rateLimit?.requests_last_hour ?? 0 },
               { label: "Limit", value: rateLimit?.limit_per_hour ?? 0 },
               { label: "Remaining", value: rateLimit?.remaining ?? 0 },
             ].map((item) => (
               <div key={item.label} className="text-center">
-                <p className="font-mono text-sm font-semibold tabular-nums text-slate-800">
+                <p className="font-mono text-sm font-semibold tabular-nums text-ink">
                   {formatNumber(item.value)}
                 </p>
-                <p className="mt-0.5 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+                <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-ink-muted">
                   {item.label}
                 </p>
               </div>
@@ -457,7 +451,7 @@ export default function MerchantDashboardPage() {
                   )
                 }
                 aria-label="กรอง metric"
-                className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-medium text-slate-600 outline-none focus:border-emerald-500"
+                className="h-8 rounded-control border border-line bg-surface px-2 text-[11px] font-medium text-ink-secondary outline-none focus:border-brand focus:ring-2 focus:ring-brand/10"
               >
                 <option value="">ทุก Metric</option>
                 <option value="qr_created">QR Created</option>
@@ -468,7 +462,7 @@ export default function MerchantDashboardPage() {
                 value={usageKeyId}
                 onChange={(event) => setUsageKeyId(event.target.value)}
                 aria-label="กรอง API Key"
-                className="h-8 max-w-[150px] rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-medium text-slate-600 outline-none focus:border-emerald-500"
+                className="h-8 max-w-[150px] rounded-control border border-line bg-surface px-2 text-[11px] font-medium text-ink-secondary outline-none focus:border-brand focus:ring-2 focus:ring-brand/10"
               >
                 <option value="">ทุก API Key</option>
                 {(keys.data ?? []).map((key) => (

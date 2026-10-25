@@ -473,7 +473,7 @@
           },
           RegisterBusinessRequest: {
             type: "object",
-            required: ["username", "password", "business_name", "promptpay_id"],
+            required: ["username", "password", "business_name", "email", "promptpay_id"],
             properties: {
               username: {
                 type: "string",
@@ -492,6 +492,13 @@
                 maxLength: 150,
                 example: "APay Demo Coffee Shop",
                 description: "ชื่อธุรกิจหรือร้านค้า"
+              },
+              email: {
+                type: "string",
+                format: "email",
+                maxLength: 255,
+                example: "owner@coffee-shop.com",
+                description: "อีเมลติดต่อของร้านค้า (ห้ามซ้ำ)"
               },
               promptpay_id: {
                 type: "string",
@@ -530,6 +537,7 @@
               "role",
               "business_id",
               "business_name",
+              "email",
               "promptpay_id",
               "line_user_id"
             ],
@@ -556,6 +564,11 @@
               business_name: {
                 type: "string",
                 example: "APay Demo Coffee Shop"
+              },
+              email: {
+                type: "string",
+                format: "email",
+                example: "owner@coffee-shop.com"
               },
               promptpay_id: {
                 type: "string",

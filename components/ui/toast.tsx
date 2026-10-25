@@ -40,9 +40,9 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const TONE_STYLES: Record<ToastTone, string> = {
-  success: "border-emerald-200",
-  error: "border-rose-200",
-  info: "border-sky-200",
+  success: "border-success-border",
+  error: "border-danger-border",
+  info: "border-info-border",
 };
 
 const TONE_ICONS = {
@@ -52,9 +52,9 @@ const TONE_ICONS = {
 };
 
 const TONE_ICON_STYLES: Record<ToastTone, string> = {
-  success: "bg-emerald-50 text-emerald-600",
-  error: "bg-rose-50 text-rose-600",
-  info: "bg-sky-50 text-sky-600",
+  success: "bg-success-soft text-success-ink",
+  error: "bg-danger-soft text-danger-ink",
+  info: "bg-info-soft text-info-ink",
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -153,27 +153,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <div
               key={item.id}
               className={cn(
-                "animate-toast-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border bg-white p-3.5 shadow-xl shadow-slate-900/5",
+                "animate-toast-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-card border bg-surface p-3.5 shadow-raised",
                 TONE_STYLES[item.tone],
               )}
             >
               <span
                 className={cn(
-                  "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg",
+                  "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-control",
                   TONE_ICON_STYLES[item.tone],
                 )}
               >
                 <Icon className="size-4" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                <p className="text-sm font-semibold text-ink">{item.title}</p>
                 {item.message ? (
-                  <p className="mt-0.5 break-words text-xs leading-5 text-slate-600">
+                  <p className="mt-0.5 break-words text-xs leading-5 text-ink-secondary">
                     {item.message}
                   </p>
                 ) : null}
                 {item.correlationId ? (
-                  <p className="mt-1.5 break-all font-mono text-[10px] leading-4 text-slate-400">
+                  <p className="mt-1.5 break-all font-mono text-[11px] leading-4 text-ink-muted">
                     correlation_id: {item.correlationId}
                   </p>
                 ) : null}
@@ -182,7 +182,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 type="button"
                 onClick={() => dismiss(item.id)}
                 aria-label="ปิดการแจ้งเตือน"
-                className="flex size-6 shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                className="flex size-6 shrink-0 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted hover:text-ink"
               >
                 <X className="size-3.5" />
               </button>
@@ -210,14 +210,14 @@ export function ErrorNotice({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 sm:flex-row sm:items-center">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600">
+    <div className="flex flex-col items-start gap-3 rounded-panel border border-danger-border bg-danger-soft p-4 sm:flex-row sm:items-center">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-card bg-surface text-danger-ink">
         <AlertTriangle className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-rose-800">{message}</p>
+        <p className="text-sm font-semibold text-danger-ink">{message}</p>
         {correlationId ? (
-          <p className="mt-0.5 break-all font-mono text-[10px] text-rose-500">
+          <p className="mt-0.5 break-all font-mono text-[11px] text-danger-ink/80">
             correlation_id: {correlationId}
           </p>
         ) : null}
@@ -226,7 +226,7 @@ export function ErrorNotice({
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
+          className="rounded-control border border-danger-border bg-surface px-3 py-1.5 text-xs font-semibold text-danger-ink hover:bg-danger-soft"
         >
           ลองใหม่
         </button>

@@ -12,9 +12,22 @@ import {
   type StoredSession,
 } from "@/lib/auth/storage";
 
-export const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000"
-).replace(/\/+$/, "");
+/**
+ * Origin of the APay backend, e.g. `http://localhost:3000`. The `NEXT_PUBLIC_`
+ * prefix is required for the value to survive into the browser bundle.
+ *
+ * Pasting the API root or a trailing slash is tolerated here, so
+ * `http://host:3000/api/v1/` and `http://host:3000` both resolve to
+ * `http://host:3000/api/v1/...` instead of doubling the prefix.
+ */
+function resolveBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  const origin = configured && configured.length > 0 ? configured : "http://localhost:3000";
+
+  return origin.replace(/\/+$/, "").replace(/\/api\/v1$/i, "");
+}
+
+export const API_BASE_URL = resolveBaseUrl();
 
 export const API_PREFIX = "/api/v1";
 
@@ -65,7 +78,8 @@ function createCorrelationId(): string {
 }
 
 export function buildUrl(path: string, query?: object): string {
-  const url = new URL(`${API_BASE_URL}${API_PREFIX}${path}`);
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = new URL(`${API_BASE_URL}${API_PREFIX}${normalizedPath}`);
   if (query) {
     for (const [key, value] of Object.entries(query) as Array<[string, QueryValue]>) {
       if (value === undefined || value === null || value === "") continue;

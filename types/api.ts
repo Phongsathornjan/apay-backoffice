@@ -70,9 +70,8 @@ export interface RegisterBusinessRequest {
   username: string;
   password: string;
   business_name: string;
+  email: string;
   promptpay_id: string;
-  line_destination?: string | null;
-  line_user_id?: string | null;
   package_id?: string | null;
 }
 
@@ -82,6 +81,7 @@ export interface RegisterBusinessData {
   role: "business";
   business_id: string;
   business_name: string;
+  email: string;
   promptpay_id: string;
   line_user_id: string | null;
 }

@@ -1,13 +1,17 @@
-import type {
-  InputHTMLAttributes,
-  ReactNode,
-  SelectHTMLAttributes,
-  TextareaHTMLAttributes,
+import {
+  cloneElement,
+  isValidElement,
+  useId,
+  type InputHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
 } from "react";
 import { cn } from "@/lib/utils";
 
 const FIELD_BASE =
-  "w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500";
+  "w-full rounded-card border border-line bg-surface px-3.5 text-sm text-ink shadow-card outline-none transition placeholder:text-ink-muted focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-ink-secondary aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/10";
 
 export function Input({
   className,
@@ -35,6 +39,12 @@ export function Textarea({
   return <textarea className={cn(FIELD_BASE, "min-h-24 py-2.5", className)} {...props} />;
 }
 
+type FieldChild = ReactElement<{
+  id?: string;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
+}>;
+
 export interface FormFieldProps {
   label: string;
   htmlFor?: string;
@@ -54,19 +64,44 @@ export function FormField({
   children,
   className,
 }: FormFieldProps) {
+  const generatedId = useId();
+  const hintId = `${generatedId}-hint`;
+  const errorId = `${generatedId}-error`;
+
+  const child = isValidElement(children) ? (children as FieldChild) : null;
+  const controlId = htmlFor ?? child?.props.id ?? generatedId;
+  const describedBy =
+    [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") || undefined;
+
+  const control =
+    child && describedBy
+      ? cloneElement(child, {
+          "aria-describedby": describedBy,
+          "aria-invalid": error ? true : undefined,
+        })
+      : children;
+
   return (
     <div className={cn("space-y-1.5", className)}>
       <div className="flex items-center justify-between gap-3">
-        <label htmlFor={htmlFor} className="text-xs font-semibold text-slate-700">
+        <label htmlFor={controlId} className="text-xs font-semibold text-ink">
           {label}
           {optional ? (
-            <span className="ml-1.5 font-normal text-slate-400">(ไม่บังคับ)</span>
+            <span className="ml-1.5 font-normal text-ink-muted">(ไม่บังคับ)</span>
           ) : null}
         </label>
-        {hint ? <span className="text-[11px] text-slate-400">{hint}</span> : null}
+        {hint ? (
+          <span id={hintId} className="text-[11px] text-ink-muted">
+            {hint}
+          </span>
+        ) : null}
       </div>
-      {children}
-      {error ? <p className="text-xs font-medium text-rose-600">{error}</p> : null}
+      {control}
+      {error ? (
+        <p id={errorId} className="text-xs font-medium text-danger-ink">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -80,19 +115,21 @@ export function Checkbox({
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-3.5 transition hover:border-slate-300",
+        "flex cursor-pointer items-start gap-3 rounded-card border border-line bg-surface p-3.5 transition hover:border-line-strong",
         className,
       )}
     >
       <input
         type="checkbox"
-        className="mt-0.5 size-4 shrink-0 accent-emerald-600"
+        className="mt-0.5 size-4 shrink-0 accent-brand"
         {...props}
       />
       <span className="min-w-0">
-        <span className="block text-sm font-medium text-slate-800">{label}</span>
+        <span className="block text-sm font-medium text-ink">{label}</span>
         {description ? (
-          <span className="mt-0.5 block text-xs leading-5 text-slate-500">{description}</span>
+          <span className="mt-0.5 block text-xs leading-5 text-ink-secondary">
+            {description}
+          </span>
         ) : null}
       </span>
     </label>

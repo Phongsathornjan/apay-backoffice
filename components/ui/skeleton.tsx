@@ -10,7 +10,7 @@ export function Skeleton({
 }) {
   return (
     <div
-      className={cn("animate-pulse rounded-lg bg-slate-100", className)}
+      className={cn("animate-pulse rounded-control bg-surface-muted", className)}
       style={style}
       aria-hidden="true"
     />
@@ -19,10 +19,10 @@ export function Skeleton({
 
 export function KpiSkeleton() {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+    <div className="rounded-panel border border-line bg-surface p-5">
       <div className="flex items-center justify-between">
         <Skeleton className="h-3 w-24" />
-        <Skeleton className="size-9 rounded-xl" />
+        <Skeleton className="size-9 rounded-card" />
       </div>
       <Skeleton className="mt-4 h-8 w-36" />
       <Skeleton className="mt-3 h-3 w-28" />
@@ -42,7 +42,7 @@ export function ChartSkeleton({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-200 bg-white p-5",
+        "rounded-panel border border-line bg-surface p-5",
         className,
       )}
     >

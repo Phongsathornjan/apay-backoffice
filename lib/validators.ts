@@ -7,6 +7,20 @@ export function validateRequired(value: string, label: string): ValidationResult
   return value.trim() ? { valid: true } : { valid: false, message: `กรุณากรอก${label}` };
 }
 
+export function validateEmail(value: string): ValidationResult {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return { valid: false, message: "กรุณากรอกอีเมล" };
+  }
+  if (trimmed.length > 255) {
+    return { valid: false, message: "อีเมลต้องไม่เกิน 255 ตัวอักษร" };
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return { valid: false, message: "รูปแบบอีเมลไม่ถูกต้อง" };
+  }
+  return { valid: true };
+}
+
 export function validatePromptPayId(value: string): ValidationResult {
   if (!/^\d{10}$|^\d{13}$/.test(value.trim())) {
     return {

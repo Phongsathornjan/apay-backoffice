@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 
 export function FullPageLoader({ label = "กำลังโหลดข้อมูล..." }: { label?: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
+    <div className="flex min-h-screen items-center justify-center bg-canvas">
       <div className="flex flex-col items-center gap-3">
-        <div className="flex size-11 items-center justify-center rounded-2xl border border-emerald-100 bg-white text-emerald-600 shadow-sm">
+        <div className="flex size-11 items-center justify-center rounded-panel border border-brand-border bg-surface text-brand shadow-card">
           <Loader2 className="size-5 animate-spin" />
         </div>
-        <p className="text-sm font-medium text-slate-500">{label}</p>
+        <p className="text-sm font-medium text-ink-secondary">{label}</p>
       </div>
     </div>
   );
@@ -27,12 +27,12 @@ function AccessDenied({ allowed }: { allowed: UserRole[] }) {
 
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+      <div className="max-w-md rounded-panel border border-line bg-surface p-8 text-center shadow-card">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-panel bg-danger-soft text-danger-ink">
           <ShieldAlert className="size-6" />
         </div>
-        <h1 className="mt-4 text-lg font-semibold text-slate-900">ไม่มีสิทธิ์เข้าถึงหน้านี้</h1>
-        <p className="mt-1.5 text-sm leading-6 text-slate-500">
+        <h1 className="mt-4 text-lg font-semibold text-ink">ไม่มีสิทธิ์เข้าถึงหน้านี้</h1>
+        <p className="mt-1.5 text-sm leading-6 text-ink-secondary">
           หน้านี้สำหรับผู้ใช้บทบาท {allowed.join(", ")} เท่านั้น
           กรุณากลับไปยังหน้าหลักของบัญชีคุณ
         </p>

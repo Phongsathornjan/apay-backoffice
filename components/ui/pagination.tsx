@@ -24,8 +24,8 @@ export function Pagination({
   const to = limit ? Math.min(page * limit, total) : total;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
-      <p className="text-xs text-slate-500">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3">
+      <p className="text-xs text-ink-secondary">
         แสดง {formatNumber(from)}–{formatNumber(to)} จาก {formatNumber(total)} รายการ
       </p>
       <div className="flex items-center gap-2">
@@ -34,7 +34,7 @@ export function Pagination({
             value={limit}
             onChange={(event) => onLimitChange(Number(event.target.value))}
             aria-label="จำนวนรายการต่อหน้า"
-            className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-emerald-500"
+            className="h-8 rounded-control border border-line bg-surface px-2 text-xs text-ink-secondary outline-none focus:border-brand focus:ring-2 focus:ring-brand/10"
           >
             {[10, 20, 50, 100].map((value) => (
               <option key={value} value={value}>
@@ -52,7 +52,7 @@ export function Pagination({
         >
           ก่อนหน้า
         </Button>
-        <span className="min-w-16 text-center text-xs font-semibold text-slate-600">
+        <span className="min-w-16 text-center text-xs font-semibold text-ink-secondary">
           {page} / {safeTotalPages}
         </span>
         <Button

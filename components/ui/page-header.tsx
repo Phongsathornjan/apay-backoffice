@@ -15,15 +15,21 @@ export function PageHeader({
     <div className="flex flex-col justify-between gap-4 pb-1 sm:flex-row sm:items-end">
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700">
+          <p className="mb-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-ink">
+            <span
+              aria-hidden="true"
+              className="h-px w-5 bg-brand-gradient"
+            />
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-[28px]">
+        <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-[28px]">
           {title}
         </h1>
         {description ? (
-          <div className="mt-1.5 max-w-3xl text-sm leading-6 text-slate-500">{description}</div>
+          <div className="mt-1.5 max-w-3xl text-sm leading-6 text-ink-secondary">
+            {description}
+          </div>
         ) : null}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}

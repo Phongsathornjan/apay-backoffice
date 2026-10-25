@@ -33,6 +33,7 @@ export function Modal({
   dismissible?: boolean;
 }) {
   const titleId = useId();
+  const descriptionId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ export function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/45 p-0 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-ink/45 p-0 backdrop-blur-[2px] sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (dismissible && event.target === event.currentTarget) onClose();
       }}
@@ -66,18 +67,24 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          "animate-modal-in flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl outline-none sm:rounded-2xl",
+          "animate-modal-in flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-panel border border-line bg-surface shadow-raised outline-none sm:rounded-panel",
           SIZES[size],
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <h2 id={titleId} className="text-base font-semibold text-slate-900">
+            <h2 id={titleId} className="text-base font-semibold text-ink">
               {title}
             </h2>
             {description ? (
-              <div className="mt-1 text-xs leading-5 text-slate-500">{description}</div>
+              <div
+                id={descriptionId}
+                className="mt-1 text-xs leading-5 text-ink-secondary"
+              >
+                {description}
+              </div>
             ) : null}
           </div>
           {dismissible ? (
@@ -85,7 +92,7 @@ export function Modal({
               type="button"
               onClick={onClose}
               aria-label="ปิด"
-              className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="flex size-8 shrink-0 items-center justify-center rounded-control text-ink-muted transition hover:bg-surface-muted hover:text-ink"
             >
               <X className="size-4" />
             </button>
@@ -93,7 +100,7 @@ export function Modal({
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">{children}</div>
         {footer ? (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3.5">
+          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line bg-surface-subtle px-5 py-3.5">
             {footer}
           </div>
         ) : null}
@@ -119,6 +126,7 @@ export function Drawer({
   footer?: ReactNode;
 }) {
   const titleId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -137,7 +145,7 @@ export function Drawer({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex justify-end bg-slate-950/40 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-[80] flex justify-end bg-ink/40 backdrop-blur-[2px]">
       <button
         type="button"
         aria-label="ปิดแผงรายละเอียด"
@@ -148,29 +156,35 @@ export function Drawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="animate-drawer-in relative flex h-full w-full max-w-xl flex-col border-l border-slate-200 bg-white shadow-2xl"
+        aria-describedby={description ? descriptionId : undefined}
+        className="animate-drawer-in relative flex h-full w-full max-w-xl flex-col border-l border-line bg-surface shadow-raised"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div>
-            <h2 id={titleId} className="text-base font-semibold text-slate-900">
+            <h2 id={titleId} className="text-base font-semibold text-ink">
               {title}
             </h2>
             {description ? (
-              <div className="mt-1 text-xs leading-5 text-slate-500">{description}</div>
+              <div
+                id={descriptionId}
+                className="mt-1 text-xs leading-5 text-ink-secondary"
+              >
+                {description}
+              </div>
             ) : null}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="ปิด"
-            className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="flex size-8 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted hover:text-ink"
           >
             <X className="size-4" />
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">{children}</div>
         {footer ? (
-          <div className="border-t border-slate-100 bg-slate-50/70 px-5 py-3.5">{footer}</div>
+          <div className="border-t border-line bg-surface-subtle px-5 py-3.5">{footer}</div>
         ) : null}
       </aside>
     </div>,

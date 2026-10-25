@@ -144,14 +144,14 @@ export default function SubscriptionPage() {
           title="แพ็กเกจ & โควต้า"
           description="กำลังโหลดรอบบิลและประวัติการใช้งาน..."
         />
-        <Skeleton className="h-[170px] w-full rounded-2xl" />
+        <Skeleton className="h-[170px] w-full rounded-panel" />
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} className="h-28 w-full rounded-2xl" />
+            <Skeleton key={index} className="h-28 w-full rounded-panel" />
           ))}
         </div>
-        <Skeleton className="h-[340px] w-full rounded-2xl" />
-        <Skeleton className="h-80 w-full rounded-2xl" />
+        <Skeleton className="h-[340px] w-full rounded-panel" />
+        <Skeleton className="h-80 w-full rounded-panel" />
       </div>
     );
   }
@@ -235,7 +235,7 @@ export default function SubscriptionPage() {
           value={formatNumber(current.quota_remaining)}
           hint={`ใช้ไป ${formatNumber(current.quota_used)} / ${formatNumber(current.quota_limit)} ครั้ง`}
           icon={Gauge}
-          tone={quotaRatio >= 0.8 ? "rose" : quotaRatio >= 0.5 ? "amber" : "emerald"}
+          tone={quotaRatio >= 0.8 ? "danger" : quotaRatio >= 0.5 ? "warning" : "brand"}
           footer={<Progress value={quotaRatio * 100} tone={quotaTone(quotaRatio)} />}
         />
         <KpiCard
@@ -243,14 +243,14 @@ export default function SubscriptionPage() {
           value={`${days} วัน`}
           hint={`Paid through ${formatDate(current.current_period_end)}`}
           icon={CalendarClock}
-          tone={days <= 7 ? "amber" : "indigo"}
+          tone={days <= 7 ? "warning" : "brand"}
         />
         <KpiCard
           label="ชำระครั้งล่าสุด"
           value={current.last_payment_at ? formatDate(current.last_payment_at) : "—"}
           hint={current.last_payment_at ? formatDateTime(current.last_payment_at) : "ยังไม่มีประวัติชำระ"}
           icon={Wallet}
-          tone="slate"
+          tone="neutral"
         />
         <KpiCard
           label="API Key Slots"
@@ -259,7 +259,7 @@ export default function SubscriptionPage() {
           )}`}
           hint={`Rate limit ${formatNumber(current.rate_limit_per_hour)} requests / hour`}
           icon={KeyRound}
-          tone="indigo"
+          tone="brand"
         />
       </div>
 
@@ -284,12 +284,12 @@ export default function SubscriptionPage() {
 
         <Card className="p-5">
           <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+            <span className="flex size-8 items-center justify-center rounded-card bg-surface-muted text-ink-secondary">
               <ReceiptText className="size-4" />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Subscription details</h2>
-              <p className="text-[10px] text-slate-400">ข้อมูลรอบบิลปัจจุบัน</p>
+              <h2 className="text-sm font-semibold text-ink">Subscription details</h2>
+              <p className="text-[11px] text-ink-muted">ข้อมูลรอบบิลปัจจุบัน</p>
             </div>
           </div>
           <dl className="mt-4 space-y-3 text-[11px]">
@@ -302,11 +302,11 @@ export default function SubscriptionPage() {
               ["Max API keys", formatNumber(subscription.max_api_keys)],
               ["Subscription ID", subscription.id],
             ].map(([label, value]) => (
-              <div key={label} className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
-                <dt className="text-slate-400">{label}</dt>
-                <dd className="max-w-[60%] text-right font-medium text-slate-700">
+              <div key={label} className="flex items-start justify-between gap-3 border-b border-line pb-2.5 last:border-0 last:pb-0">
+                <dt className="text-ink-muted">{label}</dt>
+                <dd className="max-w-[60%] text-right font-medium text-ink">
                   {value === null ? <StatusBadge status={subscription.status} /> : (
-                    <span className={label === "Subscription ID" ? "break-all font-mono text-[9px]" : ""}>
+                    <span className={label === "Subscription ID" ? "break-all font-mono text-[11px]" : ""}>
                       {value}
                     </span>
                   )}
@@ -314,12 +314,12 @@ export default function SubscriptionPage() {
               </div>
             ))}
           </dl>
-          <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/60 p-3">
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800">
+          <div className="mt-4 rounded-card border border-brand-border bg-brand-soft p-3">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold text-brand-ink">
               <Check className="size-3.5" />
               Paid-through คือวันที่ชำระล่วงหน้าถึง
             </p>
-            <p className="mt-1 text-[10px] leading-4 text-emerald-700/80">
+            <p className="mt-1 text-[11px] leading-4 text-brand-ink">
               หากต่ออายุก่อนครบกำหนด รอบบิลใหม่จะเริ่มต่อจากวันเดิม
               โดยไม่เสียวันคงเหลือ
             </p>
@@ -328,14 +328,14 @@ export default function SubscriptionPage() {
       </div>
 
       <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">ประวัติรอบบิล</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <h2 className="text-sm font-semibold text-ink">ประวัติรอบบิล</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">
               Billing period history พร้อมเปอร์เซ็นต์การใช้โควต้า
             </p>
           </div>
-          <Badge tone="slate">{formatNumber(trend?.periods.length ?? 0)} รอบ</Badge>
+          <Badge tone="neutral">{formatNumber(trend?.periods.length ?? 0)} รอบ</Badge>
         </div>
         {!trend || trend.periods.length === 0 ? (
           <div className="p-4">
@@ -350,7 +350,7 @@ export default function SubscriptionPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/70 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                <tr className="border-b border-line bg-surface-subtle text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                   <th className="px-5 py-2.5">Period</th>
                   <th className="px-3 py-2.5">Package ID</th>
                   <th className="px-3 py-2.5 text-right">Quota used</th>
@@ -358,16 +358,16 @@ export default function SubscriptionPage() {
                   <th className="px-3 py-2.5 text-right">Created</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {trend.periods.map((period) => (
-                  <tr key={period.id} className="hover:bg-slate-50/60">
-                    <td className="whitespace-nowrap px-5 py-3 text-[11px] text-slate-700">
+                  <tr key={period.id} className="hover:bg-surface-subtle">
+                    <td className="whitespace-nowrap px-5 py-3 text-[11px] text-ink">
                       {formatDate(period.period_start)} – {formatDate(period.period_end)}
                     </td>
-                    <td className="max-w-[140px] truncate px-3 py-3 font-mono text-[9px] text-slate-400">
+                    <td className="max-w-[140px] truncate px-3 py-3 font-mono text-[11px] text-ink-muted">
                       {period.package_id}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-xs tabular-nums text-slate-700">
+                    <td className="px-3 py-3 text-right font-mono text-xs tabular-nums text-ink">
                       {formatNumber(period.quota_used)} / {formatNumber(period.quota_limit)}
                     </td>
                     <td className="w-44 px-3 py-3">
@@ -377,12 +377,12 @@ export default function SubscriptionPage() {
                           tone={quotaTone(period.utilization)}
                           className="h-1.5"
                         />
-                        <span className="w-10 text-right font-mono text-[10px] text-slate-500">
+                        <span className="w-10 text-right font-mono text-[11px] text-ink-secondary">
                           {formatPercent(period.utilization, 0)}
                         </span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-right text-[10px] text-slate-400">
+                    <td className="whitespace-nowrap px-3 py-3 text-right text-[11px] text-ink-muted">
                       {formatDate(period.created_at)}
                     </td>
                   </tr>
@@ -413,15 +413,15 @@ function PackageComparison({
 }) {
   return (
     <Card>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">เปรียบเทียบแพ็กเกจ</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <h2 className="text-sm font-semibold text-ink">เปรียบเทียบแพ็กเกจ</h2>
+          <p className="mt-0.5 text-xs text-ink-secondary">
             Master Packages ที่เปิดใช้งานอยู่ในขณะนี้
           </p>
         </div>
         {isAdmin ? (
-          <Link href="/admin/packages" className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800">
+          <Link href="/admin/packages" className="text-[11px] font-semibold text-brand-ink hover:text-brand">
             จัดการ Master Packages
           </Link>
         ) : null}
@@ -443,64 +443,64 @@ function PackageComparison({
             return (
               <div
                 key={pkg.id}
-                className={`relative rounded-2xl border p-4 transition ${
+                className={`relative rounded-panel border p-4 transition ${
                   isCurrent
-                    ? "border-emerald-300 bg-emerald-50/40 shadow-sm"
-                    : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-brand-border bg-brand-soft shadow-card"
+                    : "border-line bg-surface hover:border-line-strong"
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-mono text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                    <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                       {pkg.code}
                     </p>
-                    <h3 className="mt-1 text-sm font-semibold text-slate-900">{pkg.name}</h3>
+                    <h3 className="mt-1 text-sm font-semibold text-ink">{pkg.name}</h3>
                   </div>
                   {isCurrent ? (
-                    <Badge tone="emerald" dot>
+                    <Badge tone="brand" dot>
                       Current
                     </Badge>
                   ) : (
-                    <Badge tone={pkg.is_active ? "slate" : "rose"}>
+                    <Badge tone={pkg.is_active ? "success" : "neutral"}>
                       {pkg.is_active ? "Available" : "Inactive"}
                     </Badge>
                   )}
                 </div>
                 <p className="mt-3">
-                  <span className="text-xl font-bold tabular-nums text-slate-900">
+                  <span className="text-xl font-bold tabular-nums text-ink">
                     {formatCurrency(pkg.price)}
                   </span>
-                  <span className="ml-1 text-[10px] text-slate-400">
+                  <span className="ml-1 text-[11px] text-ink-muted">
                     / {pkg.billing_cycle_months} เดือน
                   </span>
                 </p>
-                <ul className="mt-3 space-y-1.5 text-[10px] text-slate-500">
+                <ul className="mt-3 space-y-1.5 text-[11px] text-ink-secondary">
                   <li className="flex items-center justify-between gap-2">
                     <span>Quota</span>
-                    <span className="font-mono font-semibold text-slate-700">
+                    <span className="font-mono font-semibold text-ink">
                       {formatNumber(pkg.quota_limit)}
                     </span>
                   </li>
                   <li className="flex items-center justify-between gap-2">
                     <span>Rate limit</span>
-                    <span className="font-mono font-semibold text-slate-700">
+                    <span className="font-mono font-semibold text-ink">
                       {formatNumber(pkg.rate_limit_per_hour)}/hr
                     </span>
                   </li>
                   <li className="flex items-center justify-between gap-2">
                     <span>API keys</span>
-                    <span className="font-mono font-semibold text-slate-700">
+                    <span className="font-mono font-semibold text-ink">
                       {formatNumber(pkg.max_api_keys)}
                     </span>
                   </li>
                 </ul>
                 {pkg.description ? (
-                  <p className="mt-3 line-clamp-2 text-[10px] leading-4 text-slate-400">
+                  <p className="mt-3 line-clamp-2 text-[11px] leading-4 text-ink-muted">
                     {pkg.description}
                   </p>
                 ) : null}
                 {isCurrent ? (
-                  <div className="mt-3 flex items-center gap-1 text-[10px] font-semibold text-emerald-700">
+                  <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-brand-ink">
                     <Check className="size-3" />
                     แพ็กเกจที่ใช้งานอยู่
                   </div>

@@ -132,10 +132,10 @@ export function daysUntil(value: string | null | undefined): number | null {
   return Math.ceil(ms / 86_400_000);
 }
 
-export function quotaTone(ratio: number): "emerald" | "amber" | "rose" {
-  if (ratio >= 0.8) return "rose";
-  if (ratio >= 0.5) return "amber";
-  return "emerald";
+export function quotaTone(ratio: number): "brand" | "warning" | "danger" {
+  if (ratio >= 0.8) return "danger";
+  if (ratio >= 0.5) return "warning";
+  return "brand";
 }
 
 export function maskKeyPrefix(prefix: string | null | undefined): string {

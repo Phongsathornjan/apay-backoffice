@@ -289,13 +289,13 @@ export function LineLinkModal({
               onRetry={alreadyLinked ? undefined : retry}
             />
             {alreadyLinked ? (
-              <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-[11px] leading-5 text-slate-600">
+              <p className="rounded-card border border-line bg-surface-subtle px-3 py-2.5 text-[11px] leading-5 text-ink-secondary">
                 ร้านค้านี้ผูก LINE User ID ไว้แล้ว — กรุณากด &quot;ปิด&quot; แล้วเข้าสู่ระบบใหม่
                 หรือรีเฟรชหน้าเพื่อรับสถานะล่าสุด
               </p>
             ) : null}
             {slotConflict ? (
-              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] leading-5 text-amber-800">
+              <p className="rounded-card border border-warning-border bg-warning-soft px-3 py-2.5 text-[11px] leading-5 text-warning-ink">
                 เศษสตางค์ยืนยัน 0.01–0.99 ถูกใช้งานครบชั่วคราว
                 กรุณารอให้ QR ที่ค้างอยู่หมดอายุ (5 นาที) แล้วกด &quot;สร้าง QR ใหม่&quot;
               </p>
@@ -327,20 +327,20 @@ export function LineLinkModal({
         ) : null}
 
         {phase === "ready" ? (
-          <p className="flex items-center justify-center gap-1.5 text-[10px] font-medium text-slate-400">
-            <Loader2 className="size-3 animate-spin text-emerald-500" />
+          <p className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-ink-muted">
+            <Loader2 className="size-3 animate-spin text-brand" />
             กำลังตรวจสอบยอดโอนอัตโนมัติทุก 3 วินาที
           </p>
         ) : null}
 
         {pollError ? (
-          <p className="text-center text-[10px] leading-4 text-rose-600">
+          <p className="text-center text-[11px] leading-4 text-danger-ink">
             {pollError} — ระบบจะลองใหม่ให้อัตโนมัติ
           </p>
         ) : null}
 
         {phase === "expired" ? (
-          <p className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] leading-5 text-amber-800">
+          <p className="flex items-start gap-2 rounded-card border border-warning-border bg-warning-soft px-3 py-2.5 text-[11px] leading-5 text-warning-ink">
             <TimerReset className="mt-0.5 size-3.5 shrink-0" />
             <span>
               QR หมดอายุ กรุณากด &quot;สร้าง QR ใหม่&quot; — ระบบจะจองเศษสตางค์ 0.01–0.99 ให้ใหม่
@@ -348,8 +348,8 @@ export function LineLinkModal({
           </p>
         ) : null}
 
-        <p className="flex items-start gap-2 text-[10px] leading-4 text-slate-400">
-          <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+        <p className="flex items-start gap-2 text-[11px] leading-4 text-ink-muted">
+          <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-brand" />
           <span>
             QR มีอายุ 5 นาที · 1 LINE User ID ผูกได้กับ 1 ธุรกิจเท่านั้น
             <span className="mt-1 block">
@@ -385,41 +385,41 @@ function LinkSteps({ phase }: { phase: Phase }) {
             key={step.title}
             aria-current={active ? "step" : undefined}
             className={cn(
-              "rounded-xl border px-2 py-1.5 transition-colors",
+              "rounded-card border px-2 py-1.5 transition-colors",
               done
-                ? "border-emerald-200 bg-emerald-50/70"
+                ? "border-success-border bg-success-soft"
                 : active
-                  ? "border-[#0b3b8c]/25 bg-[#eef4ff]"
-                  : "border-slate-200 bg-white",
+                  ? "border-brand-border bg-brand-soft"
+                  : "border-line bg-surface",
             )}
           >
             <span className="flex items-center gap-1.5">
               <span
                 className={cn(
-                  "grid size-4 shrink-0 place-items-center rounded-full text-[9px] font-bold",
+                  "grid size-4 shrink-0 place-items-center rounded-full text-[11px] font-bold",
                   done
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-success text-white"
                     : active
-                      ? "bg-[#0b3b8c] text-white"
-                      : "bg-slate-100 text-slate-500",
+                      ? "bg-brand text-white"
+                      : "bg-surface-muted text-ink-secondary",
                 )}
               >
                 {done ? <Check className="size-2.5" /> : index + 1}
               </span>
               <span
                 className={cn(
-                  "truncate text-[10px] font-semibold",
+                  "truncate text-[11px] font-semibold",
                   done
-                    ? "text-emerald-800"
+                    ? "text-success-ink"
                     : active
-                      ? "text-[#0b3b8c]"
-                      : "text-slate-500",
+                      ? "text-brand-ink"
+                      : "text-ink-secondary",
                 )}
               >
                 {step.title}
               </span>
             </span>
-            <p className="mt-0.5 truncate pl-[22px] text-[9px] text-slate-400">{step.hint}</p>
+            <p className="mt-0.5 truncate pl-[22px] text-[11px] text-ink-muted">{step.hint}</p>
           </li>
         );
       })}

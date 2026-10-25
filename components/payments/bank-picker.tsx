@@ -30,10 +30,10 @@ export function BankPicker({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p id="bank-picker-label" className="text-[11px] font-semibold text-slate-700">
+        <p id="bank-picker-label" className="text-[11px] font-semibold text-ink">
           {label}
         </p>
-        {hint ? <p className="text-[10px] text-slate-400">{hint}</p> : null}
+        {hint ? <p className="text-[11px] text-ink-muted">{hint}</p> : null}
       </div>
       <div
         role="radiogroup"
@@ -54,13 +54,13 @@ export function BankPicker({
               title={bank.supported ? bank.name : `${bank.name} — เร็ว ๆ นี้`}
               onClick={() => onChange(bank.code)}
               className={cn(
-                "flex items-center justify-between gap-2 rounded-xl border px-2.5 py-2 text-left transition",
+                "flex items-center justify-between gap-2 rounded-card border px-2.5 py-2 text-left transition",
                 selected
-                  ? "border-emerald-300 bg-emerald-50/70 text-emerald-900 shadow-sm"
-                  : "border-slate-200 bg-white text-slate-700",
+                  ? "border-brand-border bg-brand-soft text-brand-ink shadow-card"
+                  : "border-line bg-surface text-ink",
                 bankDisabled
                   ? "cursor-not-allowed opacity-60"
-                  : "hover:border-slate-300 hover:bg-slate-50",
+                  : "hover:border-line-strong hover:bg-surface-subtle",
               )}
             >
               <span className="flex min-w-0 items-center gap-2">
@@ -68,12 +68,12 @@ export function BankPicker({
                 <span className="truncate text-[11px] font-semibold">{bank.shortName}</span>
               </span>
               {!bank.supported ? (
-                <span className="flex shrink-0 items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] font-medium text-slate-400">
+                <span className="flex shrink-0 items-center gap-1 rounded-full border border-line bg-surface-subtle px-1.5 py-0.5 text-[11px] font-medium text-ink-muted">
                   <Clock3 className="size-2.5" />
                   เร็ว ๆ นี้
                 </span>
               ) : selected ? (
-                <Check className="size-3.5 shrink-0 text-emerald-600" />
+                <Check className="size-3.5 shrink-0 text-brand-ink" />
               ) : null}
             </button>
           );
@@ -92,19 +92,19 @@ export function BankSupportChips({ className }: { className?: string }) {
 
   return (
     <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
-      <span className="text-[9px] text-slate-400">รองรับ:</span>
+      <span className="text-[11px] text-ink-muted">รองรับ:</span>
       {SUPPORTED_BANKS.map((bank) => (
         <span
           key={bank.code}
           title={`${bank.name} — รองรับแล้ว`}
-          className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-white px-1.5 py-0.5 text-[9px] font-semibold text-slate-600"
+          className="inline-flex items-center gap-1 rounded-full border border-success-border bg-surface px-1.5 py-0.5 text-[11px] font-semibold text-ink-secondary"
         >
           <span className={cn("size-1.5 rounded-full", bank.accent)} />
           {bank.shortName}
         </span>
       ))}
       {upcoming > 0 ? (
-        <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/70 px-1.5 py-0.5 text-[9px] font-medium text-slate-400">
+        <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface/70 px-1.5 py-0.5 text-[11px] font-medium text-ink-muted">
           <Clock3 className="size-2.5" />
           อีก {upcoming} ธนาคารเร็ว ๆ นี้
         </span>

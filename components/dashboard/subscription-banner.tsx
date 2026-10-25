@@ -33,14 +33,14 @@ export function SubscriptionBanner({
 }) {
   if (!subscription) {
     return (
-      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-dashed border-slate-300 bg-white p-5 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-4 rounded-panel border border-dashed border-line-strong bg-surface p-5 sm:flex-row sm:items-center">
         <div className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-card bg-warning-soft text-warning-ink">
             <CreditCard className="size-5" />
           </span>
           <div>
-            <p className="text-sm font-semibold text-slate-900">ยังไม่มีแพ็กเกจที่ใช้งานอยู่</p>
-            <p className="mt-0.5 text-xs leading-5 text-slate-500">
+            <p className="text-sm font-semibold text-ink">ยังไม่มีแพ็กเกจที่ใช้งานอยู่</p>
+            <p className="mt-0.5 text-xs leading-5 text-ink-secondary">
               {adminView
                 ? "ธุรกิจนี้ยังไม่ถูกผูกแพ็กเกจ จึงยังไม่สามารถสร้าง API Key หรือ QR ได้"
                 : "กรุณาติดต่อผู้ดูแลระบบเพื่อผูกแพ็กเกจก่อนเริ่มใช้งาน API"}
@@ -68,16 +68,17 @@ export function SubscriptionBanner({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-2xl border p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:p-6",
+        "relative overflow-hidden rounded-panel border p-5 shadow-card sm:p-6",
         problematic
-          ? "border-rose-200 bg-gradient-to-br from-rose-50 via-white to-white"
-          : "border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-white to-white",
+          ? "border-danger-border bg-gradient-to-br from-danger-soft via-surface to-surface"
+          : "border-brand-border bg-gradient-to-br from-brand-soft via-surface to-surface",
       )}
     >
       <div
+        aria-hidden="true"
         className={cn(
           "absolute -right-16 -top-24 size-64 rounded-full blur-3xl",
-          problematic ? "bg-rose-400/10" : "bg-emerald-400/10",
+          problematic ? "bg-danger/10" : "bg-brand/10",
         )}
       />
       <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -85,26 +86,28 @@ export function SubscriptionBanner({
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "flex size-8 items-center justify-center rounded-xl",
-                problematic ? "bg-rose-100 text-rose-700" : "bg-emerald-100 text-emerald-700",
+                "flex size-8 items-center justify-center rounded-card",
+                problematic
+                  ? "bg-danger-soft text-danger-ink"
+                  : "bg-brand-soft text-brand-ink",
               )}
             >
               {problematic ? <AlertTriangle className="size-4" /> : <ShieldCheck className="size-4" />}
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
               Current package
             </span>
             <StatusBadge status={subscription.status} />
             {subscription.package_code ? (
-              <Badge tone="indigo" className="font-mono uppercase">
+              <Badge tone="brand" className="font-mono uppercase">
                 {subscription.package_code}
               </Badge>
             ) : null}
           </div>
-          <h2 className="mt-2.5 text-xl font-bold tracking-tight text-slate-900">
+          <h2 className="mt-2.5 text-xl font-bold tracking-tight text-ink">
             {subscription.package_name ?? "ไม่ระบุชื่อแพ็กเกจ"}
           </h2>
-          <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+          <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-secondary">
             <span className="inline-flex items-center gap-1.5">
               <CalendarClock className="size-3.5" />
               Paid through {formatDate(subscription.current_period_end)}
@@ -115,19 +118,19 @@ export function SubscriptionBanner({
             </span>
           </p>
           {isPastDue ? (
-            <p className="mt-2.5 max-w-2xl rounded-lg bg-rose-100/70 px-3 py-2 text-[11px] font-medium leading-5 text-rose-800">
+            <p className="mt-2.5 max-w-2xl rounded-control bg-danger-soft px-3 py-2 text-[11px] font-medium leading-5 text-danger-ink">
               แพ็กเกจเลยวันชำระแล้วและไม่มี grace period — โควต้าจะถูกตั้งเป็น 0
               จนกว่าจะต่ออายุ
             </p>
           ) : null}
         </div>
 
-        <div className="w-full max-w-sm shrink-0 rounded-xl border border-slate-200/80 bg-white/80 p-3.5 backdrop-blur">
+        <div className="w-full max-w-sm shrink-0 rounded-card border border-line bg-surface/80 p-3.5 backdrop-blur">
           <div className="flex items-center justify-between gap-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
               Quota usage
             </p>
-            <p className="font-mono text-[11px] font-semibold tabular-nums text-slate-700">
+            <p className="font-mono text-[11px] font-semibold tabular-nums text-ink">
               {formatNumber(subscription.quota_used)} / {formatNumber(subscription.quota_limit)}
             </p>
           </div>
@@ -137,14 +140,14 @@ export function SubscriptionBanner({
             className="mt-2 h-2"
             ariaLabel="โควต้าที่ใช้ไป"
           />
-          <div className="mt-2.5 flex items-center justify-between text-[10px] text-slate-500">
+          <div className="mt-2.5 flex items-center justify-between text-[11px] text-ink-secondary">
             <span>เหลือ {formatNumber(subscription.quota_remaining)} ครั้ง</span>
             <span className="font-semibold">{formatPercent(usedRatio)}</span>
           </div>
           {showDetailsLink ? (
             <Link
               href="/subscription"
-              className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800"
+              className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-brand-ink hover:text-brand"
             >
               ดูรายละเอียดแพ็กเกจ
               <ArrowUpRight className="size-3" />

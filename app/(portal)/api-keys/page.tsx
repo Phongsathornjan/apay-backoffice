@@ -230,7 +230,7 @@ export default function ApiKeysPage() {
       />
 
       {breakdown.isLoading ? null : maxKeys === 0 ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800">
+        <div className="rounded-card border border-warning-border bg-warning-soft px-4 py-3 text-xs leading-5 text-warning-ink">
           <p className="flex items-center gap-2 font-semibold">
             <ShieldOff className="size-4" />
             ยังไม่สามารถสร้าง API Key ได้
@@ -241,7 +241,7 @@ export default function ApiKeysPage() {
           </p>
         </div>
       ) : isFull ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800">
+        <div className="rounded-card border border-warning-border bg-warning-soft px-4 py-3 text-xs leading-5 text-warning-ink">
           ใช้งาน API Key ครบ {formatNumber(maxKeys)} Slot ตามแพ็กเกจแล้ว
           หากต้องการเพิ่ม ต้องเพิกถอน Key เดิมหรืออัปเกรดแพ็กเกจ
         </div>
@@ -250,7 +250,7 @@ export default function ApiKeysPage() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {breakdown.isLoading || !summary ? (
           Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div key={index} className="rounded-panel border border-line bg-surface p-5">
               <Skeleton className="h-3 w-24" />
               <Skeleton className="mt-4 h-8 w-20" />
               <Skeleton className="mt-3 h-3 w-32" />
@@ -263,14 +263,14 @@ export default function ApiKeysPage() {
               value={formatNumber(summary.active_keys)}
               hint="Key ที่ยังเปิดใช้งาน"
               icon={ShieldCheck}
-              tone="emerald"
+              tone="success"
             />
             <KpiCard
               label="Revoked / Deleted"
               value={formatNumber(summary.revoked_keys)}
               hint="ยังเก็บประวัติการใช้งาน"
               icon={ShieldOff}
-              tone="rose"
+              tone="danger"
             />
             <KpiCard
               label="API Key Slots"
@@ -281,7 +281,7 @@ export default function ApiKeysPage() {
                   : "ยังไม่มีแพ็กเกจ"
               }
               icon={KeyRound}
-              tone="indigo"
+              tone="brand"
               footer={
                 <Progress
                   value={
@@ -289,7 +289,7 @@ export default function ApiKeysPage() {
                       ? (slotUsed / summary.max_api_keys) * 100
                       : 0
                   }
-                  tone={isFull ? "rose" : "indigo"}
+                  tone={isFull ? "danger" : "brand"}
                 />
               }
             />
@@ -300,7 +300,7 @@ export default function ApiKeysPage() {
                 keys.reduce((sum, key) => sum + key.qr_paid, 0),
               )} · ${formatNumber(keys.length)} คีย์ในช่วง ${range.interval}`}
               icon={Eye}
-              tone="slate"
+              tone="neutral"
             />
           </>
         )}
@@ -317,7 +317,7 @@ export default function ApiKeysPage() {
               onChange={(event) =>
                 setMetric(event.target.value as "qr_created" | "qr_paid" | "quota_deducted")
               }
-              className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-medium text-slate-600 outline-none focus:border-emerald-500"
+              className="h-8 rounded-control border border-line bg-surface px-2 text-[11px] font-medium text-ink-secondary outline-none focus:border-brand"
               aria-label="เลือก Metric"
             >
               {METRIC_OPTIONS.map((option) => (
@@ -363,57 +363,57 @@ export default function ApiKeysPage() {
         <Card className="p-4">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">ตัวกรองรายการ</h2>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <h2 className="text-sm font-semibold text-ink">ตัวกรองรายการ</h2>
+              <p className="mt-0.5 text-xs text-ink-secondary">
                 ควบคุมข้อมูลที่แสดงในตารางและกราฟ
               </p>
             </div>
           </div>
-          <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-3.5 transition hover:border-slate-300">
+          <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-card border border-line p-3.5 transition hover:border-line-strong">
             <input
               type="checkbox"
               checked={includeDeleted}
               onChange={(event) => setIncludeDeleted(event.target.checked)}
-              className="mt-0.5 size-4 accent-emerald-600"
+              className="mt-0.5 size-4 accent-brand"
             />
             <span>
-              <span className="block text-xs font-semibold text-slate-700">
+              <span className="block text-xs font-semibold text-ink">
                 รวม Key ที่ถูก Soft Delete
               </span>
-              <span className="mt-0.5 block text-[10px] leading-4 text-slate-400">
+              <span className="mt-0.5 block text-[11px] leading-4 text-ink-muted">
                 เปิดเพื่อดูประวัติของ Key ที่เพิกถอนแล้ว (ไม่นับรวมใน slot)
               </span>
             </span>
           </label>
 
-          <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-3.5">
+          <div className="mt-4 space-y-3 rounded-card bg-surface-subtle p-3.5">
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-500">ช่วงข้อมูล</span>
-              <span className="font-semibold text-slate-700">{range.interval.toUpperCase()}</span>
+              <span className="text-ink-secondary">ช่วงข้อมูล</span>
+              <span className="font-semibold text-ink">{range.interval.toUpperCase()}</span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-500">Timezone</span>
-              <span className="font-mono text-[10px] text-slate-600">Asia/Bangkok</span>
+              <span className="text-ink-secondary">Timezone</span>
+              <span className="font-mono text-[11px] text-ink-secondary">Asia/Bangkok</span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-500">แสดงในตาราง</span>
-              <span className="font-semibold text-slate-700">{formatNumber(keys.length)} คีย์</span>
+              <span className="text-ink-secondary">แสดงในตาราง</span>
+              <span className="font-semibold text-ink">{formatNumber(keys.length)} คีย์</span>
             </div>
           </div>
         </Card>
       </div>
 
       <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3.5 sm:px-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">รายการ API Keys</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <h2 className="text-sm font-semibold text-ink">รายการ API Keys</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">
               {includeDeleted
                 ? "รวมคีย์ที่ถูกเพิกถอนแล้ว"
                 : "แสดงเฉพาะคีย์ที่ยังไม่ถูก Soft Delete"}
             </p>
           </div>
-          <Badge tone="slate">{formatNumber(keys.length)} รายการ</Badge>
+          <Badge tone="neutral">{formatNumber(keys.length)} รายการ</Badge>
         </div>
 
         {breakdown.isLoading ? (
@@ -448,7 +448,7 @@ export default function ApiKeysPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px] text-left">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/70 text-[9px] font-semibold uppercase tracking-[0.1em] text-slate-400">
+                <tr className="border-b border-line bg-surface-subtle text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-muted">
                   <th className="px-4 py-2.5 sm:px-5">Key</th>
                   <th className="px-3 py-2.5">Status</th>
                   <th className="px-3 py-2.5">Last used</th>
@@ -458,29 +458,29 @@ export default function ApiKeysPage() {
                   <th className="px-3 py-2.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {keys.map((key) => {
                   const deleted = Boolean(key.deleted_at);
                   return (
-                    <tr key={key.id} className="group hover:bg-slate-50/60">
+                    <tr key={key.id} className="group hover:bg-surface-subtle">
                       <td className="px-4 py-3 sm:px-5">
                         <div className="flex items-start gap-2.5">
                           <span
-                            className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
+                            className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-control ${
                               deleted
-                                ? "bg-slate-100 text-slate-400"
+                                ? "bg-surface-muted text-ink-muted"
                                 : key.is_active
-                                  ? "bg-emerald-50 text-emerald-600"
-                                  : "bg-slate-100 text-slate-400"
+                                  ? "bg-success-soft text-success-ink"
+                                  : "bg-surface-muted text-ink-muted"
                             }`}
                           >
                             <KeyRound className="size-4" />
                           </span>
                           <div className="min-w-0">
-                            <p className="max-w-[220px] truncate text-xs font-semibold text-slate-800">
+                            <p className="max-w-[220px] truncate text-xs font-semibold text-ink">
                               {key.name}
                             </p>
-                            <p className="mt-0.5 font-mono text-[10px] text-slate-400">
+                            <p className="mt-0.5 font-mono text-[11px] text-ink-muted">
                               {maskKeyPrefix(key.key_prefix)}
                             </p>
                           </div>
@@ -492,36 +492,36 @@ export default function ApiKeysPage() {
                           label={deleted ? "Revoked" : key.is_active ? "Active" : "Inactive"}
                         />
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 text-[10px] text-slate-500">
+                      <td className="whitespace-nowrap px-3 py-3 text-[11px] text-ink-secondary">
                         {formatDateTime(key.last_used_at)}
                       </td>
-                      <td className="px-3 py-3 text-right font-mono text-xs font-semibold tabular-nums text-slate-700">
+                      <td className="px-3 py-3 text-right font-mono text-xs font-semibold tabular-nums text-ink">
                         {formatNumber(key.qr_created)}
                       </td>
-                      <td className="px-3 py-3 text-right font-mono text-xs font-semibold tabular-nums text-emerald-700">
+                      <td className="px-3 py-3 text-right font-mono text-xs font-semibold tabular-nums text-success-ink">
                         {formatNumber(key.qr_paid)}
                       </td>
                       <td className="w-32 px-3 py-3">
                         <div className="space-y-1.5">
                           <div>
-                            <div className="flex justify-between text-[9px] text-slate-400">
+                            <div className="flex justify-between text-[11px] text-ink-muted">
                               <span>created</span>
                               <span>{formatPercent(key.share_of_created, 0)}</span>
                             </div>
                             <Progress
                               value={key.share_of_created * 100}
-                              tone="emerald"
+                              tone="success"
                               className="h-1"
                             />
                           </div>
                           <div>
-                            <div className="flex justify-between text-[9px] text-slate-400">
+                            <div className="flex justify-between text-[11px] text-ink-muted">
                               <span>paid</span>
                               <span>{formatPercent(key.share_of_paid, 0)}</span>
                             </div>
                             <Progress
                               value={key.share_of_paid * 100}
-                              tone="indigo"
+                              tone="brand"
                               className="h-1"
                             />
                           </div>
@@ -534,7 +534,7 @@ export default function ApiKeysPage() {
                             onClick={() => setUsageKey({ id: key.id, name: key.name })}
                             aria-label={`ดู usage ของ ${key.name}`}
                             title="ดู Usage"
-                            className="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                            className="flex size-8 items-center justify-center rounded-control text-ink-muted transition hover:bg-surface-muted hover:text-ink"
                           >
                             <Eye className="size-3.5" />
                           </button>
@@ -545,7 +545,7 @@ export default function ApiKeysPage() {
                                 onClick={() => setEditingKey(key)}
                                 aria-label={`แก้ไขชื่อ ${key.name}`}
                                 title="แก้ไขชื่อ"
-                                className="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                                className="flex size-8 items-center justify-center rounded-control text-ink-muted transition hover:bg-surface-muted hover:text-ink"
                               >
                                 <Pencil className="size-3.5" />
                               </button>
@@ -560,10 +560,10 @@ export default function ApiKeysPage() {
                                 }
                                 aria-label={key.is_active ? `ปิดใช้งาน ${key.name}` : `เปิดใช้งาน ${key.name}`}
                                 title={key.is_active ? "ปิดใช้งาน" : "เปิดใช้งาน"}
-                                className={`flex size-7 items-center justify-center rounded-lg transition hover:bg-slate-100 ${
+                                className={`flex size-8 items-center justify-center rounded-control transition hover:bg-surface-muted ${
                                   key.is_active
-                                    ? "text-amber-500 hover:text-amber-700"
-                                    : "text-emerald-600 hover:text-emerald-700"
+                                    ? "text-warning hover:text-warning-ink"
+                                    : "text-success-ink hover:text-success-ink"
                                 }`}
                               >
                                 <Power className="size-3.5" />
@@ -573,7 +573,7 @@ export default function ApiKeysPage() {
                                 onClick={() => setPending({ type: "revoke", key })}
                                 aria-label={`เพิกถอน ${key.name}`}
                                 title="เพิกถอน Key"
-                                className="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                className="flex size-8 items-center justify-center rounded-control text-ink-muted transition hover:bg-danger-soft hover:text-danger-ink"
                               >
                                 <Trash2 className="size-3.5" />
                               </button>

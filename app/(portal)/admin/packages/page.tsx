@@ -126,38 +126,38 @@ export default function AdminPackagesPage() {
           value={formatNumber(packages.length)}
           hint={onlyActive ? "แสดงเฉพาะแพ็กเกจที่ Active" : "Showing all non-deleted packages"}
           icon={Layers}
-          tone="indigo"
+          tone="brand"
         />
         <KpiCard
           label="Active"
           value={formatNumber(activeCount)}
           hint="ร้านค้าสามารถเลือกใช้งานได้"
           icon={CheckCircle2}
-          tone="emerald"
+          tone="success"
         />
         <KpiCard
           label="Inactive"
           value={formatNumber(inactiveCount)}
           hint="ซ่อนจาก Business แต่ยังจัดการได้"
           icon={XCircle}
-          tone="slate"
+          tone="neutral"
         />
       </div>
 
       <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3.5 sm:px-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">รายการแพ็กเกจ</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <h2 className="text-sm font-semibold text-ink">รายการแพ็กเกจ</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">
               {formatNumber(packages.length)} แพ็กเกจ · Soft-deleted ไม่ถูกแสดง
             </p>
           </div>
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-[10px] font-medium text-slate-600">
+          <label className="flex cursor-pointer items-center gap-2 rounded-control border border-line px-2.5 py-1.5 text-[11px] font-medium text-ink-secondary">
             <input
               type="checkbox"
               checked={onlyActive}
               onChange={(event) => setOnlyActive(event.target.checked)}
-              className="size-3.5 accent-emerald-600"
+              className="size-3.5 accent-brand"
             />
             แสดงเฉพาะ Active
           </label>
@@ -193,7 +193,7 @@ export default function AdminPackagesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px] text-left">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/70 text-[9px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                <tr className="border-b border-line bg-surface-subtle text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-muted">
                   <th className="px-4 py-2.5 sm:px-5">Package</th>
                   <th className="px-3 py-2.5 text-right">Price</th>
                   <th className="px-3 py-2.5 text-right">Quota</th>
@@ -205,54 +205,54 @@ export default function AdminPackagesPage() {
                   <th className="px-3 py-2.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {packages.map((pkg) => (
-                  <tr key={pkg.id} className="hover:bg-slate-50/60">
+                  <tr key={pkg.id} className="hover:bg-surface-subtle">
                     <td className="px-4 py-3 sm:px-5">
                       <div className="flex items-start gap-2.5">
                         <span
-                          className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
+                          className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-control ${
                             pkg.is_active
-                              ? "bg-emerald-50 text-emerald-600"
-                              : "bg-slate-100 text-slate-400"
+                              ? "bg-success-soft text-success-ink"
+                              : "bg-surface-muted text-ink-muted"
                           }`}
                         >
                           <PackageIcon className="size-4" />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-xs font-semibold text-slate-800">{pkg.name}</p>
-                          <p className="mt-0.5 font-mono text-[9px] font-semibold uppercase text-slate-400">
+                          <p className="text-xs font-semibold text-ink">{pkg.name}</p>
+                          <p className="mt-0.5 font-mono text-[11px] font-semibold uppercase text-ink-muted">
                             {pkg.code}
                           </p>
                           {pkg.description ? (
-                            <p className="mt-1 max-w-[260px] truncate text-[9px] text-slate-400">
+                            <p className="mt-1 max-w-[260px] truncate text-[11px] text-ink-muted">
                               {pkg.description}
                             </p>
                           ) : null}
                         </div>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-right font-mono text-xs font-semibold tabular-nums text-slate-800">
+                    <td className="whitespace-nowrap px-3 py-3 text-right font-mono text-xs font-semibold tabular-nums text-ink">
                       {formatCurrency(pkg.price)}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-[11px] text-slate-600">
+                    <td className="px-3 py-3 text-right font-mono text-[11px] text-ink-secondary">
                       {formatNumber(pkg.quota_limit)}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-[11px] text-slate-600">
+                    <td className="px-3 py-3 text-right font-mono text-[11px] text-ink-secondary">
                       {formatNumber(pkg.rate_limit_per_hour)}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-[11px] text-slate-600">
+                    <td className="px-3 py-3 text-right font-mono text-[11px] text-ink-secondary">
                       {formatNumber(pkg.max_api_keys)}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-[11px] text-slate-600">
+                    <td className="px-3 py-3 text-right font-mono text-[11px] text-ink-secondary">
                       {pkg.billing_cycle_months} mo
                     </td>
                     <td className="px-3 py-3">
-                      <Badge tone={pkg.is_active ? "emerald" : "slate"} dot>
+                      <Badge tone={pkg.is_active ? "success" : "neutral"} dot>
                         {pkg.is_active ? "Active" : "Inactive"}
                       </Badge>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-[10px] text-slate-500">
+                    <td className="whitespace-nowrap px-3 py-3 text-[11px] text-ink-secondary">
                       {formatDate(pkg.updated_at)}
                     </td>
                     <td className="px-3 py-3">
@@ -265,7 +265,7 @@ export default function AdminPackagesPage() {
                           }}
                           aria-label={`แก้ไข ${pkg.name}`}
                           title="แก้ไข"
-                          className="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                          className="flex size-8 items-center justify-center rounded-control text-ink-muted transition hover:bg-surface-muted hover:text-ink"
                         >
                           <Pencil className="size-3.5" />
                         </button>
@@ -274,7 +274,7 @@ export default function AdminPackagesPage() {
                           onClick={() => setDeleteTarget(pkg)}
                           aria-label={`ลบ ${pkg.name}`}
                           title="Soft delete"
-                          className="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                          className="flex size-8 items-center justify-center rounded-control text-ink-muted transition hover:bg-danger-soft hover:text-danger-ink"
                         >
                           <Trash2 className="size-3.5" />
                         </button>
@@ -287,7 +287,7 @@ export default function AdminPackagesPage() {
           </div>
         )}
 
-        <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-2 text-[9px] text-slate-400">
+        <div className="border-t border-line bg-surface-subtle px-4 py-2 text-[11px] text-ink-muted">
           การลบจะถูกปฏิเสธหากยังมี Subscription ที่ ACTIVE หรือ PAST_DUE
           ผูกกับแพ็กเกจนี้อยู่
         </div>

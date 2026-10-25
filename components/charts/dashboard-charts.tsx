@@ -27,21 +27,10 @@ import {
   formatPercent,
 } from "@/lib/format";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CHART_AXIS, CHART_COLORS, CHART_CURSOR, CHART_GRID, CHART_MUTED_TRACK, CHART_TOOLTIP_CURSOR, SEMANTIC_COLORS } from "@/lib/chart-colors";
 import { cn } from "@/lib/utils";
 
-export const CHART_COLORS = [
-  "#059669",
-  "#4f46e5",
-  "#0ea5e9",
-  "#f59e0b",
-  "#e11d48",
-  "#14b8a6",
-  "#8b5cf6",
-  "#64748b",
-  "#f97316",
-  "#06b6d4",
-  "#84cc16",
-];
+export { CHART_COLORS };
 
 interface TooltipEntry {
   name?: string | number;
@@ -63,21 +52,21 @@ function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="min-w-36 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
-      <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+    <div className="min-w-36 rounded-card border border-line bg-surface p-3 shadow-raised">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
         {label}
       </p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (
           <div key={`${entry.dataKey}-${index}`} className="flex items-center justify-between gap-4">
-            <span className="flex items-center gap-1.5 text-[11px] text-slate-500">
+            <span className="flex items-center gap-1.5 text-xs text-ink-secondary">
               <span
                 className="size-1.5 rounded-full"
                 style={{ backgroundColor: entry.color ?? CHART_COLORS[index] }}
               />
               {entry.name}
             </span>
-            <span className="font-mono text-[11px] font-semibold tabular-nums text-slate-800">
+            <span className="font-mono text-xs font-semibold tabular-nums text-ink">
               {formatter
                 ? formatter(Number(entry.value ?? 0))
                 : formatNumber(Number(entry.value ?? 0))}
@@ -140,7 +129,12 @@ export function SeriesChart({
   const format = currency ? formatCurrency : formatNumber;
 
   return (
-    <div style={{ height }} className="w-full">
+    <div
+      style={{ height }}
+      className="w-full"
+      role="img"
+      aria-label={`กราฟ ${series.map((item) => item.label).join(", ")}`}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
           <defs>
@@ -166,16 +160,16 @@ export function SeriesChart({
               </linearGradient>
             ))}
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             minTickGap={24}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             width={currency ? 56 : 40}
@@ -185,7 +179,7 @@ export function SeriesChart({
           />
           <Tooltip
             content={<ChartTooltip formatter={format} />}
-            cursor={{ stroke: "#cbd5e1", strokeDasharray: "3 3" }}
+            cursor={{ stroke: CHART_CURSOR, strokeDasharray: "3 3" }}
           />
           {series.map((item, index) => (
             <Area
@@ -225,13 +219,18 @@ export function FinancialChart({ series, height = 280 }: { series: DashboardSeri
   const aov = series.find((item) => item.key === "average_order_value");
 
   return (
-    <div style={{ height }} className="w-full">
+    <div
+      style={{ height }}
+      className="w-full"
+      role="img"
+      aria-label={`กราฟ GMV และ Average Order Value`}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             minTickGap={24}
@@ -239,7 +238,7 @@ export function FinancialChart({ series, height = 280 }: { series: DashboardSeri
           <YAxis
             yAxisId="left"
             width={58}
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(value: number) => formatCurrencyCompact(value)}
@@ -248,7 +247,7 @@ export function FinancialChart({ series, height = 280 }: { series: DashboardSeri
             yAxisId="right"
             orientation="right"
             width={52}
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(value: number) => formatCurrencyCompact(value)}
@@ -259,7 +258,7 @@ export function FinancialChart({ series, height = 280 }: { series: DashboardSeri
               yAxisId="left"
               dataKey={gmv.key}
               name={gmv.label}
-              fill="#10b981"
+              fill={CHART_COLORS[0]}
               radius={[5, 5, 0, 0]}
               maxBarSize={28}
             />
@@ -270,7 +269,7 @@ export function FinancialChart({ series, height = 280 }: { series: DashboardSeri
               type="monotone"
               dataKey={aov.key}
               name={aov.label}
-              stroke="#4f46e5"
+              stroke={CHART_COLORS[1]}
               strokeWidth={2.5}
               dot={false}
               activeDot={{ r: 3.5, strokeWidth: 0 }}
@@ -285,7 +284,7 @@ export function FinancialChart({ series, height = 280 }: { series: DashboardSeri
 export function PointsAreaChart({
   points,
   height = 240,
-  color = "#4f46e5",
+  color = CHART_COLORS[2],
   currency = false,
 }: {
   points: DashboardSeriesPoint[];
@@ -312,7 +311,12 @@ export function PointsAreaChart({
   }));
 
   return (
-    <div style={{ height }} className="w-full">
+    <div
+      style={{ height }}
+      className="w-full"
+      role="img"
+      aria-label={`กราฟ ${currency ? "ยอดเงิน" : "จำนวน"}`}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
           <defs>
@@ -321,16 +325,16 @@ export function PointsAreaChart({
               <stop offset="95%" stopColor={color} stopOpacity={0.01} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             minTickGap={24}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             width={44}
@@ -382,6 +386,11 @@ export function DonutChart({
 
   return (
     <div className="relative w-full" style={{ height }}>
+      <div
+        className="h-full w-full"
+        role="img"
+        aria-label={`สัดส่วน ${data.map((item) => item.name).join(", ")}`}
+      >
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -405,11 +414,11 @@ export function DonutChart({
               const item = payload[0];
               const value = Number(item.value ?? 0);
               return (
-                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
-                  <p className="text-[11px] font-medium text-slate-500">{item.name}</p>
-                  <p className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-slate-900">
+                <div className="rounded-card border border-line bg-surface p-3 shadow-raised">
+                  <p className="text-[11px] font-medium text-ink-secondary">{item.name}</p>
+                  <p className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-ink">
                     {formatNumber(value)}{" "}
-                    <span className="text-[10px] font-normal text-slate-400">
+                    <span className="text-[11px] font-normal text-ink-muted">
                       ({formatPercent(value / total, 0)})
                     </span>
                   </p>
@@ -419,11 +428,12 @@ export function DonutChart({
           />
         </PieChart>
       </ResponsiveContainer>
+      </div>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-xl font-bold tabular-nums text-slate-900">
+        <span className="text-xl font-bold tabular-nums text-ink">
           {centerValue ?? formatNumber(total)}
         </span>
-        <span className="mt-0.5 text-[10px] font-medium text-slate-400">
+        <span className="mt-0.5 text-[11px] font-medium text-ink-muted">
           {centerLabel ?? "รายการทั้งหมด"}
         </span>
       </div>
@@ -434,7 +444,7 @@ export function DonutChart({
 export function CategoryBarChart({
   data,
   height = 240,
-  color = "#4f46e5",
+  color = CHART_COLORS[2],
   currency = false,
   valueLabel = "จำนวน",
 }: {
@@ -457,19 +467,24 @@ export function CategoryBarChart({
   }
 
   return (
-    <div style={{ height }} className="w-full">
+    <div
+      style={{ height }}
+      className="w-full"
+      role="img"
+      aria-label={`กราฟแท่ง ${valueLabel} ${data.map((item) => item.name).join(", ")}`}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} vertical={false} />
           <XAxis
             dataKey="name"
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             interval={0}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "#94a3b8" }}
+            tick={{ fontSize: 10, fill: CHART_AXIS }}
             axisLine={false}
             tickLine={false}
             width={currency ? 56 : 38}
@@ -479,7 +494,7 @@ export function CategoryBarChart({
           />
           <Tooltip
             content={<ChartTooltip formatter={currency ? formatCurrency : formatNumber} />}
-            cursor={{ fill: "#f8fafc" }}
+            cursor={{ fill: CHART_TOOLTIP_CURSOR }}
           />
           <Bar dataKey="value" name={valueLabel} radius={[6, 6, 0, 0]} maxBarSize={42}>
             {data.map((entry, index) => (
@@ -502,15 +517,25 @@ export function RadialGauge({
   detail?: string;
 }) {
   const percent = Math.max(0, Math.min(1, value));
-  const color = percent >= 0.8 ? "#e11d48" : percent >= 0.5 ? "#f59e0b" : "#10b981";
+  const color =
+    percent >= 0.8
+      ? SEMANTIC_COLORS.danger
+      : percent >= 0.5
+        ? SEMANTIC_COLORS.warning
+        : CHART_COLORS[0];
 
   return (
     <div className="flex flex-col items-center justify-center py-2">
-      <svg viewBox="0 0 140 82" className="w-full max-w-[210px]" aria-label={`${label} ${formatPercent(percent)}`}>
+      <svg
+        viewBox="0 0 140 82"
+        className="w-full max-w-[210px]"
+        role="img"
+        aria-label={`${label} ${formatPercent(percent)}`}
+      >
         <path
           d="M 14 72 A 56 56 0 0 1 126 72"
           fill="none"
-          stroke="#f1f5f9"
+          stroke={CHART_MUTED_TRACK}
           strokeWidth="12"
           strokeLinecap="round"
         />
@@ -524,12 +549,12 @@ export function RadialGauge({
           strokeDasharray={`${percent * 100} 100`}
           className="transition-all duration-700"
         />
-        <text x="70" y="62" textAnchor="middle" className="fill-slate-900 text-[18px] font-bold">
+        <text x="70" y="62" textAnchor="middle" className="fill-ink text-[18px] font-bold">
           {formatPercent(percent)}
         </text>
       </svg>
-      <p className="-mt-1 text-xs font-semibold text-slate-700">{label}</p>
-      {detail ? <p className="mt-0.5 text-[10px] text-slate-400">{detail}</p> : null}
+      <p className="-mt-1 text-xs font-semibold text-ink-secondary">{label}</p>
+      {detail ? <p className="mt-0.5 text-[11px] text-ink-muted">{detail}</p> : null}
     </div>
   );
 }
@@ -544,7 +569,7 @@ export function ChartLegend({
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-2", className)}>
       {items.map((item, index) => (
-        <span key={`${item.label}-${index}`} className="flex items-center gap-1.5 text-[10px] font-medium text-slate-500">
+        <span key={`${item.label}-${index}`} className="flex items-center gap-1.5 text-[11px] font-medium text-ink-secondary">
           <span
             className="size-1.5 rounded-full"
             style={{ backgroundColor: item.color ?? CHART_COLORS[index % CHART_COLORS.length] }}

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -64,21 +64,28 @@ function NavLink({
     <Link
       href={item.href}
       onClick={onClick}
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium transition",
+        "group relative flex min-h-11 items-center gap-2.5 rounded-card px-3 py-2.5 text-[13px] font-medium transition-colors",
         active
-          ? "bg-white/10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
-          : "text-slate-400 hover:bg-white/[0.05] hover:text-slate-100",
+          ? "bg-brand-soft text-brand-ink"
+          : "text-ink-secondary hover:bg-surface-subtle hover:text-ink",
       )}
     >
+      {active ? (
+        <span
+          aria-hidden="true"
+          className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-brand"
+        />
+      ) : null}
       <Icon
         className={cn(
-          "size-4 shrink-0 transition",
-          active ? "text-emerald-400" : "text-slate-500 group-hover:text-slate-300",
+          "size-4 shrink-0 transition-colors",
+          active ? "text-brand" : "text-ink-muted group-hover:text-ink-secondary",
         )}
       />
       <span className="truncate">{item.label}</span>
-      {active ? <span className="ml-auto size-1.5 rounded-full bg-emerald-400" /> : null}
+      {active ? <span className="ml-auto size-1.5 rounded-full bg-brand" /> : null}
     </Link>
   );
 }
@@ -89,11 +96,28 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const isAdmin = role === "admin";
   const currentItem = [...MERCHANT_NAV, ...ADMIN_NAV]
     .filter((item) => isActive(pathname, item))
     .sort((a, b) => b.href.length - a.href.length)[0];
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    closeButtonRef.current?.focus();
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
+
+  const closeMobile = () => {
+    setMobileOpen(false);
+    menuButtonRef.current?.focus();
+  };
 
   const onLogout = () => {
     logout();
@@ -101,28 +125,33 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-[#0b1220]">
-      <div className="flex h-16 items-center justify-between border-b border-white/[0.06] px-5">
-        <Link href={isAdmin ? "/admin/dashboard" : "/dashboard"} onClick={() => setMobileOpen(false)}>
-          <Logo light />
+    <div className="flex h-full flex-col bg-surface">
+      <div className="flex h-16 items-center justify-between border-b border-line px-5">
+        <Link
+          href={isAdmin ? "/admin/dashboard" : "/dashboard"}
+          onClick={() => setMobileOpen(false)}
+          aria-label="APay หน้าหลัก"
+        >
+          <Logo size="sm" />
         </Link>
         <button
+          ref={closeButtonRef}
           type="button"
-          onClick={() => setMobileOpen(false)}
+          onClick={closeMobile}
           aria-label="ปิดเมนู"
-          className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-white/5 hover:text-white lg:hidden"
+          className="-mr-1 flex size-9 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted hover:text-ink lg:hidden"
         >
           <X className="size-4" />
         </button>
       </div>
 
-      <nav className="min-h-0 flex-1 space-y-5 overflow-y-auto px-3 py-5">
+      <nav className="min-h-0 flex-1 space-y-6 overflow-y-auto px-3 py-5">
         {isAdmin ? (
           <div>
-            <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
               Platform
             </p>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {ADMIN_NAV.map((item) => (
                 <NavLink
                   key={item.href}
@@ -136,17 +165,17 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <div>
-          <div className="mb-1.5 flex items-center justify-between px-3">
-            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">
+          <div className="mb-2 flex items-center justify-between gap-2 px-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
               Merchant
             </p>
             {isAdmin && activeBusiness ? (
-              <span className="max-w-[110px] truncate text-[9px] font-medium text-emerald-400/80">
+              <span className="max-w-[110px] truncate text-[11px] font-medium text-brand-ink">
                 {activeBusiness.name}
               </span>
             ) : null}
           </div>
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             {MERCHANT_NAV.map((item) => (
               <NavLink
                 key={item.href}
@@ -159,50 +188,69 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      <div className="border-t border-white/[0.06] p-3">
-        <div className="rounded-xl bg-white/[0.035] p-3">
-          <div className="flex items-center gap-2 text-[10px] font-medium text-slate-400">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
+      <div className="border-t border-line p-3">
+        <div className="rounded-card border border-line bg-surface-subtle p-3">
+          <div className="flex items-center gap-2 text-[11px] font-semibold text-ink-secondary">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-success" />
             API v1 · Asia/Bangkok
           </div>
-          <p className="mt-1 text-[10px] text-slate-600">UTC+7 · THB · PromptPay</p>
+          <p className="mt-1 text-[11px] text-ink-muted">UTC+7 · THB · PromptPay</p>
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] lg:block">{sidebar}</aside>
+    <div className="min-h-screen bg-canvas">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:rounded-card focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-ink focus:shadow-raised"
+      >
+        ข้ามไปเนื้อหาหลัก
+      </a>
+
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] border-r border-line lg:block">
+        {sidebar}
+      </aside>
 
       {mobileOpen ? (
         <div className="fixed inset-0 z-[70] lg:hidden">
           <button
             type="button"
             aria-label="ปิดเมนู"
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
+            className="absolute inset-0 bg-ink/50 backdrop-blur-sm"
+            onClick={closeMobile}
           />
-          <div className="animate-drawer-in absolute inset-y-0 left-0 w-[270px] shadow-2xl">{sidebar}</div>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="เมนูนำทาง"
+            className="animate-drawer-in absolute inset-y-0 left-0 w-[280px] shadow-raised"
+          >
+            {sidebar}
+          </div>
         </div>
       ) : null}
 
       <div className="lg:pl-[248px]">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/90 px-3 backdrop-blur-md sm:px-5 lg:px-7">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-line bg-surface/85 px-3 backdrop-blur-md sm:px-5 lg:px-7">
           <div className="flex min-w-0 items-center gap-2.5">
             <button
+              ref={menuButtonRef}
               type="button"
               onClick={() => setMobileOpen(true)}
               aria-label="เปิดเมนู"
-              className="flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 lg:hidden"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation"
+              className="flex size-10 items-center justify-center rounded-control border border-line bg-surface text-ink-secondary hover:bg-surface-subtle lg:hidden"
             >
               <Menu className="size-4" />
             </button>
             <div className="hidden sm:block">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
                 {isAdmin ? "Admin Console" : "Merchant Portal"}
               </p>
-              <p className="truncate text-sm font-semibold text-slate-800">
+              <p className="truncate text-sm font-semibold text-ink">
                 {currentItem?.label ?? "APay Backoffice"}
               </p>
             </div>
@@ -216,21 +264,22 @@ export function AppShell({ children }: { children: ReactNode }) {
                 type="button"
                 onClick={() => setProfileOpen((value) => !value)}
                 aria-expanded={profileOpen}
-                className="flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white pl-1.5 pr-2 transition hover:bg-slate-50"
+                aria-haspopup="menu"
+                className="flex h-10 items-center gap-2 rounded-card border border-line bg-surface pl-1.5 pr-2 transition-colors hover:bg-surface-subtle"
               >
-                <span className="flex size-6 items-center justify-center rounded-lg bg-slate-900 text-[10px] font-bold text-white">
+                <span className="flex size-8 items-center justify-center rounded-control bg-brand-soft text-[11px] font-bold text-brand-ink">
                   {getInitials(user?.username ?? "APay")}
                 </span>
-                <span className="hidden max-w-[110px] truncate text-xs font-semibold text-slate-700 sm:block">
+                <span className="hidden max-w-[110px] truncate text-xs font-semibold text-ink sm:block">
                   {user?.username}
                 </span>
                 <Badge
-                  tone={isAdmin ? "indigo" : "emerald"}
-                  className="hidden px-1.5 py-0 text-[9px] uppercase sm:inline-flex"
+                  tone={isAdmin ? "brand" : "neutral"}
+                  className="hidden px-1.5 py-0 text-[11px] uppercase sm:inline-flex"
                 >
                   {role}
                 </Badge>
-                <ChevronDown className="size-3 text-slate-400" />
+                <ChevronDown className="size-3 text-ink-muted" />
               </button>
 
               {profileOpen ? (
@@ -241,16 +290,19 @@ export function AppShell({ children }: { children: ReactNode }) {
                     onClick={() => setProfileOpen(false)}
                     className="fixed inset-0 z-40 cursor-default"
                   />
-                  <div className="animate-popover-in absolute right-0 top-11 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-                    <div className="border-b border-slate-100 p-4">
-                      <p className="text-sm font-semibold text-slate-900">{user?.username}</p>
-                      <p className="mt-0.5 break-all font-mono text-[10px] text-slate-400">
+                  <div
+                    role="menu"
+                    className="animate-popover-in absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-panel border border-line bg-surface shadow-raised"
+                  >
+                    <div className="border-b border-line p-4">
+                      <p className="text-sm font-semibold text-ink">{user?.username}</p>
+                      <p className="mt-0.5 break-all font-mono text-[11px] text-ink-muted">
                         {user?.user_id}
                       </p>
                       <div className="mt-2 flex items-center gap-1.5">
-                        <Badge tone={isAdmin ? "indigo" : "emerald"}>{role}</Badge>
+                        <Badge tone={isAdmin ? "brand" : "neutral"}>{role}</Badge>
                         {user?.business_id ? (
-                          <span className="max-w-[150px] truncate text-[10px] text-slate-400">
+                          <span className="max-w-[150px] truncate text-[11px] text-ink-muted">
                             {user.business_id}
                           </span>
                         ) : null}
@@ -259,7 +311,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <button
                       type="button"
                       onClick={onLogout}
-                      className="flex w-full items-center gap-2 px-4 py-3 text-left text-xs font-semibold text-rose-600 transition hover:bg-rose-50"
+                      className="flex w-full items-center gap-2 px-4 py-3 text-left text-xs font-semibold text-danger-ink transition-colors hover:bg-danger-soft"
                     >
                       <LogOut className="size-3.5" />
                       ออกจากระบบ
@@ -271,7 +323,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1640px] px-3 py-5 sm:px-5 sm:py-6 lg:px-7">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-[1440px] px-3 py-5 outline-none sm:px-5 sm:py-6 lg:px-7"
+        >
           {children}
         </main>
       </div>

@@ -1,16 +1,117 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --brand: #059669;
-  --brand-strong: #047857;
-  --accent: #4f46e5;
+  color-scheme: light;
+
+  /* Brand */
+  --apay-brand: #6554f0;
+  --apay-brand-hover: #5a49da;
+  --apay-brand-active: #4c3dc4;
+  --apay-brand-soft: #eeecfe;
+  --apay-brand-border: #d8d4fb;
+  --apay-brand-ink: #4b3acb;
+  --apay-brand-glow: rgba(101, 84, 240, 0.55);
+  --apay-gradient: linear-gradient(100deg, #6877ee 0%, #a24cf0 55%, #673fea 100%);
+
+  /* Ambient */
+  --apay-lavender: #c8c7ff;
+  --apay-cyan: #c4f0f8;
+  --apay-hero-gradient: linear-gradient(120deg, #dcd9fb 0%, #f6f5ff 48%, #d9f4f9 100%);
+
+  /* Surfaces */
+  --apay-canvas: #f5f7ff;
+  --apay-surface: #ffffff;
+  --apay-surface-subtle: #f8f9ff;
+  --apay-surface-muted: #f1f5f9;
+  --apay-line: #e2e8f0;
+  --apay-line-strong: #cbd5e1;
+
+  /* Text */
+  --apay-ink: #11182d;
+  --apay-ink-secondary: #52617a;
+  --apay-ink-muted: #5f6f86;
+
+  /* Semantic status */
+  --apay-success: #059669;
+  --apay-success-soft: #ecfdf5;
+  --apay-success-border: #a7f3d0;
+  --apay-success-ink: #047857;
+
+  --apay-warning: #d97706;
+  --apay-warning-soft: #fffbeb;
+  --apay-warning-border: #fde68a;
+  --apay-warning-ink: #b45309;
+
+  --apay-danger: #dc2626;
+  --apay-danger-soft: #fef2f2;
+  --apay-danger-border: #fecaca;
+  --apay-danger-ink: #b91c1c;
+
+  --apay-info: #2563eb;
+  --apay-info-soft: #eff6ff;
+  --apay-info-border: #bfdbfe;
+  --apay-info-ink: #1d4ed8;
+
+  /* Code / secret surfaces */
+  --apay-code-bg: #0f172a;
+  --apay-code-ink: #e2e8f0;
+  --apay-code-accent: #c8c7ff;
+
+  /* PromptPay third-party brand accent */
+  --apay-promptpay: #0b3b8c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-brand: var(--apay-brand);
+  --color-brand-hover: var(--apay-brand-hover);
+  --color-brand-active: var(--apay-brand-active);
+  --color-brand-soft: var(--apay-brand-soft);
+  --color-brand-border: var(--apay-brand-border);
+  --color-brand-ink: var(--apay-brand-ink);
+
+  --color-canvas: var(--apay-canvas);
+  --color-surface: var(--apay-surface);
+  --color-surface-subtle: var(--apay-surface-subtle);
+  --color-surface-muted: var(--apay-surface-muted);
+  --color-line: var(--apay-line);
+  --color-line-strong: var(--apay-line-strong);
+
+  --color-ink: var(--apay-ink);
+  --color-ink-secondary: var(--apay-ink-secondary);
+  --color-ink-muted: var(--apay-ink-muted);
+
+  --color-success: var(--apay-success);
+  --color-success-soft: var(--apay-success-soft);
+  --color-success-border: var(--apay-success-border);
+  --color-success-ink: var(--apay-success-ink);
+
+  --color-warning: var(--apay-warning);
+  --color-warning-soft: var(--apay-warning-soft);
+  --color-warning-border: var(--apay-warning-border);
+  --color-warning-ink: var(--apay-warning-ink);
+
+  --color-danger: var(--apay-danger);
+  --color-danger-soft: var(--apay-danger-soft);
+  --color-danger-border: var(--apay-danger-border);
+  --color-danger-ink: var(--apay-danger-ink);
+
+  --color-info: var(--apay-info);
+  --color-info-soft: var(--apay-info-soft);
+  --color-info-border: var(--apay-info-border);
+  --color-info-ink: var(--apay-info-ink);
+
+  --color-code: var(--apay-code-bg);
+  --color-code-ink: var(--apay-code-ink);
+  --color-code-accent: var(--apay-code-accent);
+  --color-promptpay: var(--apay-promptpay);
+
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+
+  --shadow-card: 0 1px 2px rgba(17, 24, 45, 0.04);
+  --shadow-raised: 0 12px 32px -16px rgba(17, 24, 45, 0.22);
+
   --font-sans: var(--font-inter), var(--font-noto-thai), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
 }
@@ -20,13 +121,13 @@
 }
 
 html {
-  background: var(--background);
+  background: var(--apay-canvas);
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--apay-canvas);
+  color: var(--apay-ink);
   font-family: var(--font-inter), var(--font-noto-thai), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
@@ -40,12 +141,21 @@ textarea {
 }
 
 ::selection {
-  background: #a7f3d0;
-  color: #064e3b;
+  background: var(--apay-brand-soft);
+  color: var(--apay-brand-ink);
 }
 
-:focus-visible {
-  outline: none;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[role="radio"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--apay-brand);
+  outline-offset: 2px;
 }
 
 /* Financial figures must not shift horizontally as values change. */
@@ -54,9 +164,34 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* Brand gradient text — use sparingly for short highlighted phrases only. */
+.text-gradient-brand {
+  background: var(--apay-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Brand gradient — use sparingly for short accents, never large surfaces. */
+.bg-brand-gradient {
+  background-image: var(--apay-gradient);
+}
+
+/* Ambient hero surface for auth/marketing moments. */
+.bg-hero-ambient {
+  background: var(--apay-hero-gradient);
+}
+
+.bg-grid-faint {
+  background-image:
+    linear-gradient(rgba(17, 24, 45, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 45, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--apay-line-strong) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -65,7 +200,7 @@ textarea {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--apay-line-strong);
   border-radius: 999px;
 }
 
@@ -129,19 +264,19 @@ textarea {
 }
 
 .animate-modal-in {
-  animation: modal-in 160ms ease-out;
+  animation: modal-in 180ms ease-out;
 }
 
 .animate-drawer-in {
-  animation: drawer-in 180ms ease-out;
+  animation: drawer-in 200ms ease-out;
 }
 
 .animate-toast-in {
-  animation: toast-in 180ms ease-out;
+  animation: toast-in 200ms ease-out;
 }
 
 .animate-popover-in {
-  animation: popover-in 140ms ease-out;
+  animation: popover-in 160ms ease-out;
 }
 
 .animate-success-pop {

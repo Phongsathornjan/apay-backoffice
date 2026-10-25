@@ -3,11 +3,12 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const TONES = {
-  emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  indigo: "bg-indigo-50 text-indigo-700 border-indigo-100",
-  amber: "bg-amber-50 text-amber-700 border-amber-100",
-  rose: "bg-rose-50 text-rose-700 border-rose-100",
-  slate: "bg-slate-100 text-slate-600 border-slate-200",
+  brand: "bg-brand-soft text-brand-ink border-brand-border",
+  success: "bg-success-soft text-success-ink border-success-border",
+  warning: "bg-warning-soft text-warning-ink border-warning-border",
+  danger: "bg-danger-soft text-danger-ink border-danger-border",
+  info: "bg-info-soft text-info-ink border-info-border",
+  neutral: "bg-surface-muted text-ink-secondary border-line",
 };
 
 export function KpiCard({
@@ -15,7 +16,7 @@ export function KpiCard({
   value,
   hint,
   icon: Icon,
-  tone = "emerald",
+  tone = "brand",
   footer,
   className,
 }: {
@@ -30,28 +31,28 @@ export function KpiCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:p-5",
+        "rounded-panel border border-line bg-surface p-4 shadow-card sm:p-5",
         className,
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-muted">
           {label}
         </p>
         <span
           className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-xl border",
+            "flex size-8 shrink-0 items-center justify-center rounded-card border",
             TONES[tone],
           )}
         >
           <Icon className="size-4" />
         </span>
       </div>
-      <div className="mt-3 truncate text-[26px] font-bold leading-none tracking-tight tabular-nums text-slate-900">
+      <div className="mt-3 truncate text-[26px] font-bold leading-none tracking-tight tabular-nums text-ink">
         {value}
       </div>
       {hint ? (
-        <div className="mt-2 text-[11px] leading-5 text-slate-500">{hint}</div>
+        <div className="mt-2 text-[11px] leading-5 text-ink-secondary">{hint}</div>
       ) : null}
       {footer ? <div className="mt-3">{footer}</div> : null}
     </div>

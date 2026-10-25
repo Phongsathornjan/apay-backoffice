@@ -2,19 +2,25 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { titleCase } from "@/lib/format";
 
-export type BadgeTone = "emerald" | "amber" | "rose" | "slate" | "indigo" | "sky";
+export type BadgeTone =
+  | "success"
+  | "warning"
+  | "danger"
+  | "neutral"
+  | "brand"
+  | "info";
 
 const TONES: Record<BadgeTone, string> = {
-  emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  amber: "border-amber-200 bg-amber-50 text-amber-700",
-  rose: "border-rose-200 bg-rose-50 text-rose-700",
-  slate: "border-slate-200 bg-slate-100 text-slate-600",
-  indigo: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  sky: "border-sky-200 bg-sky-50 text-sky-700",
+  success: "border-success-border bg-success-soft text-success-ink",
+  warning: "border-warning-border bg-warning-soft text-warning-ink",
+  danger: "border-danger-border bg-danger-soft text-danger-ink",
+  neutral: "border-line bg-surface-muted text-ink-secondary",
+  brand: "border-brand-border bg-brand-soft text-brand-ink",
+  info: "border-info-border bg-info-soft text-info-ink",
 };
 
 export function Badge({
-  tone = "slate",
+  tone = "neutral",
   children,
   dot = false,
   className,
@@ -43,19 +49,25 @@ export function statusTone(status: string | null | undefined): BadgeTone {
     case "ACTIVE":
     case "PAID":
     case "MATCHED":
-      return "emerald";
+    case "SUCCESS":
+      return "success";
     case "UNVERIFIED":
-      return "amber";
+    case "PENDING":
     case "PAST_DUE":
+      return "warning";
     case "EXPIRED":
+    case "FAILED":
+    case "ERROR":
     case "NO_MATCH":
     case "REVOKED":
-      return "rose";
+      return "danger";
     case "CANCELLED":
     case "INACTIVE":
-      return "slate";
+      return "neutral";
+    case "PROCESSING":
+      return "brand";
     default:
-      return "slate";
+      return "neutral";
   }
 }
 
@@ -69,7 +81,7 @@ export function StatusBadge({
   dot?: boolean;
 }) {
   if (!status) {
-    return <Badge tone="slate">ยังไม่มีแพ็กเกจ</Badge>;
+    return <Badge tone="neutral">ยังไม่มีแพ็กเกจ</Badge>;
   }
   return (
     <Badge tone={statusTone(status)} dot={dot}>

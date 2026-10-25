@@ -19,15 +19,15 @@ export function ChartCard({
   return (
     <section
       className={cn(
-        "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03)]",
+        "overflow-hidden rounded-panel border border-line bg-surface shadow-card",
         className,
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-3 px-5 pb-2 pt-4">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-sm font-semibold text-ink">{title}</h2>
           {description ? (
-            <p className="mt-0.5 text-xs leading-5 text-slate-500">{description}</p>
+            <p className="mt-0.5 text-xs leading-5 text-ink-secondary">{description}</p>
           ) : null}
         </div>
         {action}

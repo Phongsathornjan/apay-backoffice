@@ -74,14 +74,15 @@ export function DateRangePicker({
       <button
         type="button"
         onClick={() => (open ? setOpen(false) : openPanel())}
-        className="flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+        aria-expanded={open}
+        className="flex h-9 items-center gap-2 rounded-control border border-line bg-surface px-3 text-xs font-semibold text-ink-secondary shadow-card transition-colors hover:border-line-strong hover:bg-surface-subtle"
       >
-        <CalendarDays className="size-3.5 text-slate-400" />
+        <CalendarDays className="size-3.5 text-ink-muted" />
         <span className="max-w-[190px] truncate">{formatRangeLabel(value)}</span>
-        <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] uppercase text-slate-500">
+        <span className="rounded-control bg-surface-muted px-1.5 py-0.5 font-mono text-[11px] uppercase text-ink-muted">
           {value.interval}
         </span>
-        <ChevronDown className="size-3 text-slate-400" />
+        <ChevronDown className="size-3 text-ink-muted" />
       </button>
 
       {open ? (
@@ -92,10 +93,10 @@ export function DateRangePicker({
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
-          <div className="animate-popover-in absolute right-0 top-11 z-50 w-[360px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-950/10">
-            <div className="border-b border-slate-100 px-4 py-3">
-              <p className="text-xs font-semibold text-slate-800">ช่วงเวลาและ Interval</p>
-              <p className="mt-0.5 text-[10px] text-slate-400">เวลาไทย Asia/Bangkok (UTC+7)</p>
+          <div className="animate-popover-in absolute right-0 top-11 z-50 w-[360px] overflow-hidden rounded-panel border border-line bg-surface shadow-raised">
+            <div className="border-b border-line px-4 py-3">
+              <p className="text-xs font-semibold text-ink">ช่วงเวลาและ Interval</p>
+              <p className="mt-0.5 text-[11px] text-ink-muted">เวลาไทย Asia/Bangkok (UTC+7)</p>
             </div>
 
             <div className="grid grid-cols-2 gap-1.5 p-3">
@@ -105,10 +106,10 @@ export function DateRangePicker({
                   type="button"
                   onClick={() => choosePreset(preset.key)}
                   className={cn(
-                    "flex items-center justify-between rounded-lg border px-2.5 py-2 text-left text-[11px] font-medium transition",
+                    "flex items-center justify-between rounded-control border px-2.5 py-2 text-left text-[11px] font-medium transition-colors",
                     selectedPreset === preset.key
-                      ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-                      : "border-slate-200 text-slate-600 hover:bg-slate-50",
+                      ? "border-brand-border bg-brand-soft text-brand-ink"
+                      : "border-line text-ink-secondary hover:bg-surface-subtle",
                   )}
                 >
                   {preset.label}
@@ -119,10 +120,10 @@ export function DateRangePicker({
                 type="button"
                 onClick={() => setSelectedPreset("custom")}
                 className={cn(
-                  "col-span-2 flex items-center justify-between rounded-lg border px-2.5 py-2 text-left text-[11px] font-medium transition",
+                  "col-span-2 flex items-center justify-between rounded-control border px-2.5 py-2 text-left text-[11px] font-medium transition-colors",
                   selectedPreset === "custom"
-                    ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-                    : "border-slate-200 text-slate-600 hover:bg-slate-50",
+                    ? "border-brand-border bg-brand-soft text-brand-ink"
+                    : "border-line text-ink-secondary hover:bg-surface-subtle",
                 )}
               >
                 กำหนดเอง
@@ -130,9 +131,9 @@ export function DateRangePicker({
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 border-t border-slate-100 p-3">
+            <div className="grid grid-cols-2 gap-2 border-t border-line p-3">
               <label className="space-y-1">
-                <span className="block text-[10px] font-semibold text-slate-500">เริ่มต้น</span>
+                <span className="block text-[11px] font-semibold text-ink-secondary">เริ่มต้น</span>
                 <input
                   type="datetime-local"
                   value={inputs.from}
@@ -141,11 +142,11 @@ export function DateRangePicker({
                     setInputs((current) => ({ ...current, from: event.target.value }));
                     setSelectedPreset("custom");
                   }}
-                  className="h-9 w-full rounded-lg border border-slate-200 px-2 text-[11px] text-slate-700 outline-none focus:border-emerald-500 disabled:bg-slate-50 disabled:text-slate-400"
+                  className="h-9 w-full rounded-control border border-line px-2 text-[11px] text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 disabled:bg-surface-muted disabled:text-ink-muted"
                 />
               </label>
               <label className="space-y-1">
-                <span className="block text-[10px] font-semibold text-slate-500">สิ้นสุด</span>
+                <span className="block text-[11px] font-semibold text-ink-secondary">สิ้นสุด</span>
                 <input
                   type="datetime-local"
                   value={inputs.to}
@@ -154,23 +155,24 @@ export function DateRangePicker({
                     setInputs((current) => ({ ...current, to: event.target.value }));
                     setSelectedPreset("custom");
                   }}
-                  className="h-9 w-full rounded-lg border border-slate-200 px-2 text-[11px] text-slate-700 outline-none focus:border-emerald-500 disabled:bg-slate-50 disabled:text-slate-400"
+                  className="h-9 w-full rounded-control border border-line px-2 text-[11px] text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 disabled:bg-surface-muted disabled:text-ink-muted"
                 />
               </label>
             </div>
 
-            <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-3 py-3">
-              <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-0.5">
+            <div className="flex items-center justify-between gap-3 border-t border-line px-3 py-3">
+              <div className="inline-flex rounded-control border border-line bg-surface-muted p-0.5">
                 {(["hour", "day"] as const).map((interval) => (
                   <button
                     key={interval}
                     type="button"
                     onClick={() => changeInterval(interval)}
+                    aria-pressed={draft.interval === interval}
                     className={cn(
-                      "rounded-md px-2.5 py-1 text-[10px] font-semibold uppercase transition",
+                      "rounded-control px-2.5 py-1 text-[11px] font-semibold uppercase transition-colors",
                       draft.interval === interval
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-500",
+                        ? "bg-surface text-brand-ink shadow-card"
+                        : "text-ink-secondary",
                     )}
                   >
                     {interval}
@@ -180,18 +182,21 @@ export function DateRangePicker({
               <button
                 type="button"
                 onClick={apply}
-                className="h-8 rounded-lg bg-emerald-600 px-3.5 text-[11px] font-semibold text-white transition hover:bg-emerald-700"
+                className="h-8 rounded-control bg-brand px-3.5 text-[11px] font-semibold text-white transition-colors hover:bg-brand-hover"
               >
                 ใช้งานช่วงเวลานี้
               </button>
             </div>
 
             {error ? (
-              <p className="border-t border-rose-100 bg-rose-50 px-3 py-2 text-[10px] font-medium text-rose-600">
+              <p
+                role="alert"
+                className="border-t border-danger-border bg-danger-soft px-3 py-2 text-[11px] font-medium text-danger-ink"
+              >
                 {error}
               </p>
             ) : (
-              <p className="border-t border-slate-100 bg-slate-50/60 px-3 py-2 text-[10px] text-slate-400">
+              <p className="border-t border-line bg-surface-subtle px-3 py-2 text-[11px] text-ink-muted">
                 ช่วงรวมไม่เกิน 365 วัน และโหมด hour ไม่เกิน 31 วัน
               </p>
             )}

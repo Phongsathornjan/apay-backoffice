@@ -18,7 +18,7 @@ export function SegmentedControl<T extends string>({
   return (
     <div
       className={cn(
-        "inline-flex rounded-xl border border-slate-200 bg-slate-100/70 p-0.5",
+        "inline-flex rounded-card border border-line bg-surface-muted p-0.5",
         className,
       )}
     >
@@ -29,11 +29,11 @@ export function SegmentedControl<T extends string>({
           onClick={() => onChange(option.value)}
           aria-pressed={value === option.value}
           className={cn(
-            "rounded-[10px] font-semibold transition",
+            "rounded-control font-semibold transition",
             size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs",
             value === option.value
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-500 hover:text-slate-800",
+              ? "bg-surface text-brand-ink shadow-card"
+              : "text-ink-secondary hover:text-ink",
           )}
         >
           {option.label}

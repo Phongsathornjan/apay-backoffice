@@ -24,10 +24,19 @@ multi-key API access and role-scoped analytics for `admin` and `business` users.
 ```bash
 pnpm install
 cp .env.example .env.local
-pnpm dev --port 3001
+pnpm dev
 ```
 
 Open [http://localhost:3001](http://localhost:3001).
+
+The dev/start port comes from `PORT` in `.env.local` (or `.env`), read by
+`scripts/next-with-env.mjs`. Shell env wins over the files, and a CLI flag wins
+over both:
+
+```bash
+PORT=4000 pnpm dev
+pnpm dev --port 4000
+```
 
 The backend from `api-docs.html` uses port `3000`, so the frontend is normally
 run on `3001`. If the backend runs elsewhere, set:

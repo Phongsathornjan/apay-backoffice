@@ -7,22 +7,23 @@ type Size = "sm" | "md" | "lg" | "icon";
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "bg-emerald-600 text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 focus-visible:outline-emerald-600",
+    "bg-brand text-white shadow-card shadow-brand/25 hover:bg-brand-hover active:bg-brand-active focus-visible:outline-brand",
   secondary:
-    "border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-slate-400",
-  ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-slate-400",
+    "border border-line bg-surface text-ink shadow-card hover:border-line-strong hover:bg-surface-subtle focus-visible:outline-brand",
+  ghost:
+    "text-ink-secondary hover:bg-surface-muted hover:text-ink focus-visible:outline-brand",
   danger:
-    "bg-rose-600 text-white shadow-sm shadow-rose-600/20 hover:bg-rose-700 focus-visible:outline-rose-600",
-  dark: "bg-slate-900 text-white hover:bg-slate-800 focus-visible:outline-slate-900",
+    "bg-danger text-white shadow-card shadow-danger/20 hover:bg-danger-ink focus-visible:outline-danger",
+  dark: "bg-ink text-white hover:bg-ink/90 focus-visible:outline-ink",
   outline:
-    "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 focus-visible:outline-emerald-500",
+    "border border-brand-border bg-brand-soft text-brand-ink hover:bg-brand-border/60 focus-visible:outline-brand",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-8 gap-1.5 rounded-lg px-3 text-xs",
-  md: "h-10 gap-2 rounded-xl px-4 text-sm",
-  lg: "h-11 gap-2 rounded-xl px-5 text-sm",
-  icon: "size-9 rounded-lg",
+  sm: "h-9 gap-1.5 rounded-control px-3 text-xs",
+  md: "h-10 gap-2 rounded-card px-4 text-sm",
+  lg: "h-11 gap-2 rounded-card px-5 text-sm",
+  icon: "size-9 rounded-control",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

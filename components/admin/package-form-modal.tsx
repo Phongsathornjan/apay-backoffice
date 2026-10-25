@@ -130,7 +130,7 @@ export function PackageFormModal({
     >
       <form id="package-form" onSubmit={submit} className="space-y-5">
         {error ? (
-          <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-[11px] leading-5 text-rose-700">
+          <div className="flex items-start gap-2 rounded-card border border-danger-border bg-danger-soft p-3 text-[11px] leading-5 text-danger-ink">
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             {error}
           </div>
@@ -242,9 +242,9 @@ export function PackageFormModal({
           </div>
         </div>
 
-        <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <PackageIcon className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
-          <p className="text-[10px] leading-5 text-slate-500">
+        <div className="flex items-start gap-2 rounded-card border border-line bg-surface-subtle p-3">
+          <PackageIcon className="mt-0.5 size-3.5 shrink-0 text-ink-muted" />
+          <p className="text-[11px] leading-5 text-ink-secondary">
             การลบแพ็กเกจเป็นแบบ Soft Delete และจะถูกปฏิเสธด้วย 409
             หากยังมี Subscription สถานะ ACTIVE หรือ PAST_DUE ผูกอยู่
           </p>

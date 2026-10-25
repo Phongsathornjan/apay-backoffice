@@ -29,7 +29,7 @@ const DEFAULT_TTL_SECONDS = 5 * 60;
 export function PromptPayMark({ className }: { className?: string }) {
   return (
     <span className={cn("flex items-center gap-2", className)}>
-      <span className="grid size-9 shrink-0 place-items-center rounded-[11px] bg-[#0b3b8c] text-white shadow-[0_2px_6px_rgba(11,59,140,0.28)]">
+      <span className="grid size-9 shrink-0 place-items-center rounded-control bg-promptpay text-white shadow-card">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-5">
           <path
             d="M5.6 15.1a6.7 6.7 0 0 1 11.3-7.5"
@@ -60,10 +60,10 @@ export function PromptPayMark({ className }: { className?: string }) {
         </svg>
       </span>
       <span className="min-w-0 leading-tight">
-        <span className="block text-[13px] font-bold tracking-tight text-[#0b3b8c]">
+        <span className="block text-[13px] font-bold tracking-tight text-brand-ink">
           PromptPay
         </span>
-        <span className="block text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
           Thai QR Payment
         </span>
       </span>
@@ -76,11 +76,11 @@ function Amount({ value }: { value: number }) {
 
   return (
     <span className="flex items-baseline justify-center tabular-nums">
-      <span className="text-xl font-semibold text-slate-400">฿</span>
-      <span className="font-mono text-[42px] font-bold leading-none tracking-tight text-slate-950">
+      <span className="text-xl font-semibold text-ink-muted">฿</span>
+      <span className="font-mono text-[42px] font-bold leading-none tracking-tight text-ink">
         {total}
       </span>
-      <span className="ml-1 text-[11px] font-medium text-slate-400">บาท</span>
+      <span className="ml-1 text-[11px] font-medium text-ink-muted">บาท</span>
     </span>
   );
 }
@@ -96,11 +96,11 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-3 px-3 py-2">
-      <span className="shrink-0 text-[10px] text-slate-400">{label}</span>
+      <span className="shrink-0 text-[11px] text-ink-muted">{label}</span>
       <span
         className={cn(
-          "min-w-0 truncate text-right text-[11px] font-semibold text-slate-700",
-          mono && "font-mono text-[10px]",
+          "min-w-0 truncate text-right text-[11px] font-semibold text-ink",
+          mono && "font-mono text-[11px]",
         )}
       >
         {children}
@@ -122,9 +122,9 @@ function SlipAction({
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50 active:bg-slate-100"
+      className="flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-semibold text-ink-secondary transition hover:bg-surface-subtle active:bg-surface-muted"
     >
-      <span className="text-[#0b3b8c]">{icon}</span>
+      <span className="text-brand-ink">{icon}</span>
       {label}
     </button>
   );
@@ -209,49 +209,49 @@ export function PromptPayQrSlip({
   };
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)]">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 bg-[linear-gradient(135deg,#eef4ff_0%,#ffffff_60%)] px-4 py-3">
+    <div className="overflow-hidden rounded-panel border border-line bg-surface shadow-raised">
+      <div className="flex items-center justify-between gap-3 border-b border-line bg-[linear-gradient(135deg,var(--apay-brand-soft)_0%,var(--apay-surface)_60%)] px-4 py-3">
         <PromptPayMark />
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/90 px-2.5 py-1 text-[11px] font-semibold text-ink-secondary">
           <span className={cn("size-2 rounded-full", bank.accent)} />
           {bank.shortName}
         </span>
       </div>
 
       <div className="px-5 pt-5 text-center">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted">
           ยอดที่ต้องชำระ
         </p>
         <div className="mt-1.5">
           <Amount value={amount} />
         </div>
-        <p className="mt-2 inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[9px] font-semibold text-amber-700">
+        <p className="mt-2 inline-flex items-center gap-1 rounded-full border border-warning-border bg-warning-soft px-2 py-0.5 text-[11px] font-semibold text-warning-ink">
           ต้องโอนให้ตรงทศนิยม
         </p>
       </div>
 
       <div className="relative mx-auto mt-4 w-fit">
-        <span className="pointer-events-none absolute -left-1.5 -top-1.5 size-5 rounded-tl-lg border-l-2 border-t-2 border-[#0b3b8c]" />
-        <span className="pointer-events-none absolute -right-1.5 -top-1.5 size-5 rounded-tr-lg border-r-2 border-t-2 border-[#0b3b8c]" />
-        <span className="pointer-events-none absolute -bottom-1.5 -left-1.5 size-5 rounded-bl-lg border-b-2 border-l-2 border-[#0b3b8c]" />
-        <span className="pointer-events-none absolute -bottom-1.5 -right-1.5 size-5 rounded-br-lg border-b-2 border-r-2 border-[#0b3b8c]" />
+        <span className="pointer-events-none absolute -left-1.5 -top-1.5 size-5 rounded-tl-control border-l-2 border-t-2 border-brand" />
+        <span className="pointer-events-none absolute -right-1.5 -top-1.5 size-5 rounded-tr-control border-r-2 border-t-2 border-brand" />
+        <span className="pointer-events-none absolute -bottom-1.5 -left-1.5 size-5 rounded-bl-control border-b-2 border-l-2 border-brand" />
+        <span className="pointer-events-none absolute -bottom-1.5 -right-1.5 size-5 rounded-br-control border-b-2 border-r-2 border-brand" />
 
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-inner">
+        <div className="relative overflow-hidden rounded-panel border border-line bg-surface p-4 shadow-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={qrImage}
             alt={`PromptPay QR for order ${orderId}`}
             className={cn(
-              "size-48 rounded-lg object-contain transition",
+              "size-48 rounded-control object-contain transition",
               expired && "opacity-20 grayscale",
             )}
           />
 
           {!expired ? (
-            <span className="qr-scan-line pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_12px_rgba(16,185,129,0.85)]" />
+            <span className="qr-scan-line pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent shadow-[0_0_12px_var(--apay-brand-glow)]" />
           ) : (
             <span className="absolute inset-0 flex items-center justify-center">
-              <span className="rounded-full border border-slate-300 bg-white/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500 shadow-sm">
+              <span className="rounded-full border border-line-strong bg-surface/95 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-ink-secondary shadow-card">
                 QR หมดอายุ
               </span>
             </span>
@@ -259,25 +259,25 @@ export function PromptPayQrSlip({
         </div>
       </div>
 
-      <p className="mt-3 text-center text-[10px] text-slate-500">
+      <p className="mt-3 text-center text-[11px] text-ink-secondary">
         สแกนด้วยแอปธนาคารที่ผูก LINE ไว้
       </p>
 
       <div
         className={cn(
-          "mx-4 mt-4 rounded-xl border px-3 py-2.5",
+          "mx-4 mt-4 rounded-card border px-3 py-2.5",
           expired
-            ? "border-slate-200 bg-slate-50"
+            ? "border-line bg-surface-subtle"
             : urgent
-              ? "border-rose-200 bg-rose-50/70"
-              : "border-amber-200 bg-amber-50/60",
+              ? "border-danger-border bg-danger-soft"
+              : "border-warning-border bg-warning-soft",
         )}
       >
         <div className="flex items-center justify-between gap-2">
           <span
             className={cn(
-              "flex items-center gap-1.5 text-[10px] font-semibold",
-              expired ? "text-slate-500" : urgent ? "text-rose-700" : "text-amber-800",
+              "flex items-center gap-1.5 text-[11px] font-semibold",
+              expired ? "text-ink-secondary" : urgent ? "text-danger-ink" : "text-warning-ink",
             )}
           >
             <Clock3 className="size-3" />
@@ -286,7 +286,7 @@ export function PromptPayQrSlip({
           <span
             className={cn(
               "font-mono text-sm font-bold tabular-nums",
-              expired ? "text-slate-500" : urgent ? "text-rose-700" : "text-amber-900",
+              expired ? "text-ink-secondary" : urgent ? "text-danger-ink" : "text-warning-ink",
             )}
           >
             {expired ? "00:00" : formatCountdown(remaining)}
@@ -298,24 +298,24 @@ export function PromptPayQrSlip({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress)}
-          className="mt-2 h-1 overflow-hidden rounded-full bg-white/80"
+          className="mt-2 h-1 overflow-hidden rounded-full bg-surface/80"
         >
           <div
             className={cn(
               "h-full rounded-full transition-[width] duration-1000 ease-linear",
-              expired ? "bg-slate-300" : urgent ? "bg-rose-500" : "bg-amber-400",
+              expired ? "bg-line-strong" : urgent ? "bg-danger" : "bg-warning",
             )}
             style={{ width: `${progress}%` }}
           />
         </div>
         {expiresAt ? (
-          <p className="mt-1.5 text-right text-[9px] text-slate-400">
+          <p className="mt-1.5 text-right text-[11px] text-ink-muted">
             {expired ? "หมดอายุเมื่อ" : "ใช้ได้ถึง"} {formatTime(expiresAt)} น.
           </p>
         ) : null}
       </div>
 
-      <div className="mx-4 mt-3 divide-y divide-slate-200/70 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/60">
+      <div className="mx-4 mt-3 divide-y divide-line/70 overflow-hidden rounded-card border border-line bg-surface-subtle">
         <DetailRow label="ผู้รับเงิน">PromptPay</DetailRow>
         <DetailRow label="พร้อมเพย์" mono>
           {account?.masked ?? "—"}
@@ -331,12 +331,12 @@ export function PromptPayQrSlip({
         </DetailRow>
       </div>
 
-      <p className="mx-4 mt-3 flex items-start gap-2 rounded-lg bg-slate-50 px-2.5 py-2 text-[10px] leading-4 text-slate-500">
-        <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+      <p className="mx-4 mt-3 flex items-start gap-2 rounded-control bg-surface-subtle px-2.5 py-2 text-[11px] leading-4 text-ink-secondary">
+        <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-brand" />
         โปรดตรวจสอบชื่อผู้รับและยอดเงินก่อนกดยืนยัน — ยอดต้องตรงทศนิยม 2 ตำแหน่ง
       </p>
 
-      <div className="mt-3 grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100">
+      <div className="mt-3 grid grid-cols-3 divide-x divide-line border-t border-line">
         <SlipAction
           icon={<Download className="size-4" />}
           label="บันทึก QR"
@@ -374,13 +374,13 @@ export function PromptPayPaidSlip({
   paidAt,
 }: PromptPayPaidSlipProps) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-emerald-200 bg-white shadow-[0_10px_30px_-18px_rgba(5,150,105,0.45)]">
-      <div className="bg-[linear-gradient(180deg,#ecfdf5_0%,#ffffff_100%)] px-5 pb-5 pt-6 text-center">
-        <span className="animate-success-pop mx-auto grid size-14 place-items-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-600/25">
+    <div className="overflow-hidden rounded-panel border border-success-border bg-surface shadow-raised">
+      <div className="bg-[linear-gradient(180deg,var(--apay-success-soft)_0%,var(--apay-surface)_100%)] px-5 pb-5 pt-6 text-center">
+        <span className="animate-success-pop mx-auto grid size-14 place-items-center rounded-full bg-success text-white shadow-raised ">
           <CheckCircle2 className="size-7" />
         </span>
-        <p className="mt-3 text-sm font-semibold text-emerald-900">ชำระเงินสำเร็จ</p>
-        <p className="mt-0.5 text-[10px] text-emerald-700">
+        <p className="mt-3 text-sm font-semibold text-success-ink">ชำระเงินสำเร็จ</p>
+        <p className="mt-0.5 text-[11px] text-success-ink">
           ระบบตรวจพบยอดโอนและผูก LINE ให้ร้านค้าแล้ว
         </p>
         <div className="mt-4">
@@ -389,8 +389,8 @@ export function PromptPayPaidSlip({
       </div>
 
       <div className="px-5 pb-5">
-        <div className="border-t border-dashed border-slate-200" />
-        <div className="divide-y divide-slate-100">
+        <div className="border-t border-dashed border-line" />
+        <div className="divide-y divide-line">
           <DetailRow label="ผู้รับเงิน">PromptPay</DetailRow>
           <DetailRow label="ช่องทาง">
             <span className="inline-flex items-center gap-1.5">
@@ -405,14 +405,14 @@ export function PromptPayPaidSlip({
             {orderId}
           </DetailRow>
         </div>
-        <div className="border-t border-dashed border-slate-200" />
+        <div className="border-t border-dashed border-line" />
 
-        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2.5">
-          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800">
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-card border border-success-border bg-success-soft px-3 py-2.5">
+          <span className="flex items-center gap-1.5 text-[11px] font-semibold text-success-ink">
             <Link2 className="size-3.5" />
             LINE linked
           </span>
-          <span className="truncate font-mono text-[10px] font-semibold text-emerald-900">
+          <span className="truncate font-mono text-[11px] font-semibold text-success-ink">
             {maskLineUserId(lineUserId)}
           </span>
         </div>
@@ -424,25 +424,25 @@ export function PromptPayPaidSlip({
 /** Loading placeholder shaped like the slip so the modal never jumps. */
 export function PromptPaySlipSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-4">
+    <div className="overflow-hidden rounded-panel border border-line bg-surface p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="size-9 animate-pulse rounded-[11px] bg-slate-200" />
+          <div className="size-9 animate-pulse rounded-control bg-line" />
           <div className="space-y-1.5">
-            <div className="h-2.5 w-20 animate-pulse rounded bg-slate-200" />
-            <div className="h-2 w-14 animate-pulse rounded bg-slate-100" />
+            <div className="h-2.5 w-20 animate-pulse rounded bg-line" />
+            <div className="h-2 w-14 animate-pulse rounded bg-surface-muted" />
           </div>
         </div>
-        <div className="h-5 w-16 animate-pulse rounded-full bg-slate-100" />
+        <div className="h-5 w-16 animate-pulse rounded-full bg-surface-muted" />
       </div>
       <div className="mt-6 space-y-2 text-center">
-        <div className="mx-auto h-2 w-24 animate-pulse rounded bg-slate-100" />
-        <div className="mx-auto h-9 w-36 animate-pulse rounded-lg bg-slate-200" />
+        <div className="mx-auto h-2 w-24 animate-pulse rounded bg-surface-muted" />
+        <div className="mx-auto h-9 w-36 animate-pulse rounded-control bg-line" />
       </div>
-      <div className="mx-auto mt-5 size-48 animate-pulse rounded-2xl bg-slate-100" />
-      <div className="mt-5 h-10 animate-pulse rounded-xl bg-slate-100" />
-      <p className="mt-4 flex items-center justify-center gap-2 text-[10px] font-medium text-slate-500">
-        <Loader2 className="size-3.5 animate-spin text-emerald-500" />
+      <div className="mx-auto mt-5 size-48 animate-pulse rounded-panel bg-surface-muted" />
+      <div className="mt-5 h-10 animate-pulse rounded-card bg-surface-muted" />
+      <p className="mt-4 flex items-center justify-center gap-2 text-[11px] font-medium text-ink-secondary">
+        <Loader2 className="size-3.5 animate-spin text-brand" />
         กำลังสร้าง QR ยืนยันสำหรับผูก LINE…
       </p>
     </div>

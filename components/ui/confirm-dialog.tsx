@@ -51,9 +51,9 @@ export function ConfirmDialog({
         </>
       }
     >
-      <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600" />
-        <div className="min-w-0 text-xs leading-5 text-amber-800">
+      <div className="flex gap-3 rounded-card border border-warning-border bg-warning-soft p-4">
+        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning-ink" />
+        <div className="min-w-0 text-xs leading-5 text-warning-ink">
           <p className="font-semibold">โปรดตรวจสอบก่อนยืนยัน</p>
           <p className="mt-1">
             การดำเนินการนี้อาจมีผลกับ API Key หรือการเรียกใช้งานของร้านค้าแบบทันที

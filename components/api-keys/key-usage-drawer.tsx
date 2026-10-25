@@ -36,14 +36,14 @@ export function KeyUsageDrawer({
       onClose={onClose}
       title={
         <span className="flex items-center gap-2">
-          <KeyRound className="size-4 text-slate-400" />
+          <KeyRound className="size-4 text-ink-muted" />
           {data?.name ?? apiKeyName ?? "API Key usage"}
         </span>
       }
       description={data ? maskKeyPrefix(data.key_prefix) : "Usage และ log ล่าสุดของ API Key"}
       footer={
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] text-slate-400">แสดง log ล่าสุดสูงสุด 20 รายการ</p>
+          <p className="text-[11px] text-ink-muted">แสดง log ล่าสุดสูงสุด 20 รายการ</p>
           <Button
             size="sm"
             variant="secondary"
@@ -58,9 +58,9 @@ export function KeyUsageDrawer({
     >
       {usage.isLoading ? (
         <div className="space-y-3">
-          <Skeleton className="h-24 w-full rounded-xl" />
-          <Skeleton className="h-24 w-full rounded-xl" />
-          <Skeleton className="h-64 w-full rounded-xl" />
+          <Skeleton className="h-24 w-full rounded-card" />
+          <Skeleton className="h-24 w-full rounded-card" />
+          <Skeleton className="h-64 w-full rounded-card" />
         </div>
       ) : usage.error ? (
         <ErrorNotice
@@ -76,7 +76,7 @@ export function KeyUsageDrawer({
               label={data.deleted_at ? "Revoked" : data.is_active ? "Active" : "Inactive"}
             />
             {data.deleted_at ? (
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[11px] text-ink-muted">
                 ลบเมื่อ {formatDateTime(data.deleted_at)}
               </span>
             ) : null}
@@ -85,25 +85,25 @@ export function KeyUsageDrawer({
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
-              { label: "QR Created", value: data.total_qr_created, tone: "text-slate-800" },
+              { label: "QR Created", value: data.total_qr_created, tone: "text-ink" },
               {
                 label: "QR Paid",
                 value: data.total_qr_paid_and_deducted,
-                tone: "text-emerald-700",
+                tone: "text-success-ink",
               },
               {
                 label: "Requests / hr",
                 value: data.current_hour_requests,
-                tone: "text-indigo-700",
+                tone: "text-brand-ink",
               },
               {
                 label: "Last used",
                 value: data.last_used_at ? formatDateTime(data.last_used_at) : "—",
-                tone: "text-slate-600 text-xs",
+                tone: "text-ink-secondary text-xs",
               },
             ].map((item) => (
-              <div key={item.label} className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+              <div key={item.label} className="rounded-card border border-line bg-surface-subtle p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                   {item.label}
                 </p>
                 <p className={`mt-1 truncate font-mono font-bold tabular-nums ${item.tone}`}>
@@ -115,8 +115,8 @@ export function KeyUsageDrawer({
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-xs font-semibold text-slate-800">Recent logs</h3>
-              <Badge tone="slate">{data.recent_logs.length} รายการ</Badge>
+              <h3 className="text-xs font-semibold text-ink">Recent logs</h3>
+              <Badge tone="neutral">{data.recent_logs.length} รายการ</Badge>
             </div>
             {data.recent_logs.length === 0 ? (
               <EmptyState
@@ -126,9 +126,9 @@ export function KeyUsageDrawer({
                 compact
               />
             ) : (
-              <div className="overflow-hidden rounded-xl border border-slate-200">
+              <div className="overflow-hidden rounded-card border border-line">
                 <table className="w-full text-left text-[11px]">
-                  <thead className="bg-slate-50 text-[9px] uppercase tracking-wide text-slate-400">
+                  <thead className="bg-surface-subtle text-[11px] uppercase tracking-wide text-ink-muted">
                     <tr>
                       <th className="px-3 py-2 font-semibold">Action</th>
                       <th className="px-3 py-2 font-semibold">Order</th>
@@ -136,25 +136,25 @@ export function KeyUsageDrawer({
                       <th className="px-3 py-2 text-right font-semibold">เวลา</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white">
+                  <tbody className="divide-y divide-line bg-surface">
                     {data.recent_logs.map((log) => (
-                      <tr key={log.id} className="hover:bg-slate-50/70">
+                      <tr key={log.id} className="hover:bg-surface-subtle">
                         <td className="px-3 py-2">
-                          <Badge tone={log.action === "QR_PAID" ? "emerald" : "sky"}>
+                          <Badge tone={log.action === "QR_PAID" ? "success" : "info"}>
                             {log.action}
                           </Badge>
                         </td>
-                        <td className="max-w-[150px] truncate px-3 py-2 font-mono text-[10px] text-slate-500">
+                        <td className="max-w-[150px] truncate px-3 py-2 font-mono text-[11px] text-ink-secondary">
                           {log.payment_order_id ?? "—"}
                         </td>
                         <td className="px-3 py-2">
                           {log.quota_deducted ? (
-                            <span className="font-semibold text-rose-600">-1</span>
+                            <span className="font-semibold text-danger-ink">-1</span>
                           ) : (
-                            <span className="text-slate-400">—</span>
+                            <span className="text-ink-muted">—</span>
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-right text-[10px] text-slate-500">
+                        <td className="whitespace-nowrap px-3 py-2 text-right text-[11px] text-ink-secondary">
                           {formatDateTime(log.created_at)}
                         </td>
                       </tr>

@@ -18,18 +18,18 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+    <div className="flex min-h-[70vh] items-center justify-center bg-canvas px-4">
+      <div className="w-full max-w-md rounded-panel border border-line bg-surface p-8 text-center shadow-card">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-panel bg-danger-soft text-danger-ink">
           <AlertTriangle className="size-6" />
         </div>
-        <h1 className="mt-4 text-lg font-semibold text-slate-900">เกิดข้อผิดพลาดบางอย่าง</h1>
-        <p className="mt-1.5 text-sm leading-6 text-slate-500">
+        <h1 className="mt-4 text-lg font-semibold text-ink">เกิดข้อผิดพลาดบางอย่าง</h1>
+        <p className="mt-1.5 text-sm leading-6 text-ink-secondary">
           หน้าจอนี้ไม่สามารถแสดงผลได้ในขณะนี้ กรุณาลองโหลดใหม่
           หากยังพบปัญหาให้ตรวจสอบ log ของระบบ
         </p>
         {error.digest ? (
-          <p className="mt-3 break-all font-mono text-[10px] text-slate-400">
+          <p className="mt-3 break-all font-mono text-[11px] text-ink-muted">
             digest: {error.digest}
           </p>
         ) : null}

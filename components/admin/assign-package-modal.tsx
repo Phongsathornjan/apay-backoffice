@@ -75,10 +75,10 @@ export function AssignPackageModal({
       }
     >
       <div className="space-y-4">
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5">
+        <div className="rounded-card border border-warning-border bg-warning-soft p-3.5">
           <div className="flex gap-2.5">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600" />
-            <p className="text-[10px] leading-5 text-amber-800">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning-ink" />
+            <p className="text-[11px] leading-5 text-warning-ink">
               การ Assign หรือเปลี่ยนแพ็กเกจจะเริ่มรอบบิลใหม่ทันที
               และรีเซ็ตโควต้าเป็น 0 / ตามแพ็กเกจใหม่
               โดยไม่มีการเติมโควต้าแบบ pro-rate
@@ -102,35 +102,35 @@ export function AssignPackageModal({
         </FormField>
 
         {selected ? (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5">
+          <div className="rounded-card border border-brand-border bg-brand-soft p-3.5">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-emerald-900">{selected.name}</p>
-              <span className="font-mono text-[10px] text-emerald-700">{selected.code}</span>
+              <p className="text-xs font-semibold text-brand-ink">{selected.name}</p>
+              <span className="font-mono text-[11px] text-brand-ink">{selected.code}</span>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               <div>
-                <p className="font-mono text-sm font-semibold text-emerald-900">
+                <p className="font-mono text-sm font-semibold text-brand-ink">
                   {formatNumber(selected.quota_limit)}
                 </p>
-                <p className="text-[9px] text-emerald-700/70">Quota</p>
+                <p className="text-[11px] text-brand-ink">Quota</p>
               </div>
               <div>
-                <p className="font-mono text-sm font-semibold text-emerald-900">
+                <p className="font-mono text-sm font-semibold text-brand-ink">
                   {formatNumber(selected.max_api_keys)}
                 </p>
-                <p className="text-[9px] text-emerald-700/70">API Keys</p>
+                <p className="text-[11px] text-brand-ink">API Keys</p>
               </div>
               <div>
-                <p className="font-mono text-sm font-semibold text-emerald-900">
+                <p className="font-mono text-sm font-semibold text-brand-ink">
                   {formatNumber(selected.rate_limit_per_hour)}
                 </p>
-                <p className="text-[9px] text-emerald-700/70">Req / hour</p>
+                <p className="text-[11px] text-brand-ink">Req / hour</p>
               </div>
             </div>
           </div>
         ) : null}
 
-        <p className="break-all font-mono text-[9px] text-slate-400">
+        <p className="break-all font-mono text-[11px] text-ink-muted">
           business_id: {businessId}
         </p>
       </div>

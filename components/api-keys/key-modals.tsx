@@ -93,9 +93,9 @@ export function CreateKeyModal({
       }
     >
       <form id="create-api-key-form" onSubmit={submit} className="space-y-4">
-        <div className="flex items-start gap-3 rounded-xl border border-indigo-100 bg-indigo-50 p-3.5">
-          <KeyRound className="mt-0.5 size-4 shrink-0 text-indigo-600" />
-          <p className="text-[11px] leading-5 text-indigo-800">
+        <div className="flex items-start gap-3 rounded-card border border-brand-border bg-brand-soft p-3.5">
+          <KeyRound className="mt-0.5 size-4 shrink-0 text-brand-ink" />
+          <p className="text-[11px] leading-5 text-brand-ink">
             ระบบจะแสดง Raw API Key เพียงครั้งเดียวหลังสร้างเสร็จ
             กรุณาเตรียมเก็บรักษาในที่ปลอดภัย
           </p>
@@ -120,7 +120,7 @@ export function CreateKeyModal({
           />
         </FormField>
         {businessId ? (
-          <p className="break-all font-mono text-[10px] text-slate-400">
+          <p className="break-all font-mono text-[11px] text-ink-muted">
             business_id: {businessId}
           </p>
         ) : null}
@@ -147,7 +147,7 @@ export function OneTimeKeyModal({
       size="md"
       title={
         <span className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+          <span className="flex size-8 items-center justify-center rounded-control bg-success-soft text-success-ink">
             <CheckCircle2 className="size-4" />
           </span>
           API Key ถูกสร้างแล้ว
@@ -168,10 +168,10 @@ export function OneTimeKeyModal({
       }
     >
       <div className="space-y-4">
-        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3.5">
+        <div className="rounded-card border border-danger-border bg-danger-soft p-3.5">
           <div className="flex gap-2.5">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-rose-600" />
-            <div className="text-[11px] leading-5 text-rose-800">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-danger-ink" />
+            <div className="text-[11px] leading-5 text-danger-ink">
               <p className="font-semibold">กรุณาคัดลอกและเก็บ Key นี้ทันที</p>
               <p className="mt-1">
                 ระบบเก็บเฉพาะ hash ของ Key และจะไม่แสดง raw key ซ้ำอีก
@@ -183,25 +183,25 @@ export function OneTimeKeyModal({
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <p className="text-[11px] font-semibold text-slate-600">Raw API Key</p>
+            <p className="text-[11px] font-semibold text-ink-secondary">Raw API Key</p>
             <CopyButton value={created.api_key} label="คัดลอก API Key" />
           </div>
-          <div className="relative rounded-xl border border-slate-300 bg-slate-950 p-4">
-            <code className="block break-all pr-8 font-mono text-[12px] leading-6 text-emerald-300">
+          <div className="relative rounded-card border border-line-strong bg-code p-4">
+            <code className="block break-all pr-8 font-mono text-[12px] leading-6 text-code-accent">
               {created.api_key}
             </code>
-            <Copy className="pointer-events-none absolute right-3 top-3 size-4 text-slate-600" />
+            <Copy className="pointer-events-none absolute right-3 top-3 size-4 text-ink-secondary" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
-            <p className="text-slate-400">Name</p>
-            <p className="mt-0.5 truncate font-semibold text-slate-700">{created.name}</p>
+          <div className="rounded-control border border-line bg-surface-subtle p-2.5">
+            <p className="text-ink-muted">Name</p>
+            <p className="mt-0.5 truncate font-semibold text-ink">{created.name}</p>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
-            <p className="text-slate-400">Prefix</p>
-            <p className="mt-0.5 truncate font-mono font-semibold text-slate-700">
+          <div className="rounded-control border border-line bg-surface-subtle p-2.5">
+            <p className="text-ink-muted">Prefix</p>
+            <p className="mt-0.5 truncate font-mono font-semibold text-ink">
               {created.key_prefix}
             </p>
           </div>
@@ -212,7 +212,7 @@ export function OneTimeKeyModal({
           onChange={(event) => setAcknowledged(event.target.checked)}
           label="ฉันได้คัดลอกและจัดเก็บ API Key นี้อย่างปลอดภัยแล้ว"
           description="ยืนยันเพื่อเปิดใช้งานปุ่มปิดหน้าต่าง"
-          className={acknowledged ? "border-emerald-300 bg-emerald-50/50" : undefined}
+          className={acknowledged ? "border-success-border bg-success-soft" : undefined}
         />
       </div>
     </Modal>

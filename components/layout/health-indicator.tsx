@@ -37,7 +37,7 @@ export function HealthIndicator() {
 
   return (
     <div
-      className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-500 md:flex"
+      className="hidden items-center gap-2 rounded-full border border-line bg-surface px-2.5 py-1.5 text-[11px] font-medium text-ink-secondary md:flex"
       title={health ? `${health.service_name} · ${health.message}` : "ตรวจสอบสถานะระบบ"}
     >
       <span className="relative flex size-2">
@@ -45,20 +45,20 @@ export function HealthIndicator() {
           className={cn(
             "absolute inline-flex size-full animate-ping rounded-full opacity-50",
             state === "online"
-              ? "bg-emerald-500"
+              ? "bg-success"
               : state === "offline"
-                ? "bg-rose-500"
-                : "bg-amber-500",
+                ? "bg-danger"
+                : "bg-warning",
           )}
         />
         <span
           className={cn(
             "relative inline-flex size-2 rounded-full",
             state === "online"
-              ? "bg-emerald-500"
+              ? "bg-success"
               : state === "offline"
-                ? "bg-rose-500"
-                : "bg-amber-500",
+                ? "bg-danger"
+                : "bg-warning",
           )}
         />
       </span>

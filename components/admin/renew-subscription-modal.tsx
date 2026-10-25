@@ -73,12 +73,12 @@ export function RenewSubscriptionModal({
       }
     >
       <div className="space-y-4">
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3.5">
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800">
+        <div className="rounded-card border border-info-border bg-info-soft p-3.5">
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold text-info-ink">
             <CalendarClock className="size-3.5" />
             การต่ออายุก่อนครบกำหนดจะรักษา Paid-through เดิม
           </p>
-          <p className="mt-1 text-[10px] leading-5 text-emerald-700/80">
+          <p className="mt-1 text-[11px] leading-5 text-info-ink">
             รอบบิลใหม่จะเริ่มต่อจากวันสิ้นสุดรอบเดิม และรีเซ็ตโควต้าตามแพ็กเกจที่เลือก
           </p>
         </div>
@@ -89,7 +89,7 @@ export function RenewSubscriptionModal({
           hint="เว้นว่างเพื่อใช้แพ็กเกจเดิม"
         >
           <div className="relative">
-            <Layers className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+            <Layers className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
             <Select
               id="renew-package"
               value={packageId}
@@ -107,34 +107,34 @@ export function RenewSubscriptionModal({
         </FormField>
 
         {selectedPackage ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+          <div className="rounded-card border border-line bg-surface-subtle p-3.5">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
               Package summary
             </p>
             <div className="mt-2 grid grid-cols-3 gap-2 text-center">
               <div>
-                <p className="font-mono text-sm font-semibold text-slate-800">
+                <p className="font-mono text-sm font-semibold text-ink">
                   {formatNumber(selectedPackage.quota_limit)}
                 </p>
-                <p className="text-[9px] text-slate-400">Quota</p>
+                <p className="text-[11px] text-ink-muted">Quota</p>
               </div>
               <div>
-                <p className="font-mono text-sm font-semibold text-slate-800">
+                <p className="font-mono text-sm font-semibold text-ink">
                   {formatNumber(selectedPackage.max_api_keys)}
                 </p>
-                <p className="text-[9px] text-slate-400">API Keys</p>
+                <p className="text-[11px] text-ink-muted">API Keys</p>
               </div>
               <div>
-                <p className="font-mono text-sm font-semibold text-slate-800">
+                <p className="font-mono text-sm font-semibold text-ink">
                   {formatNumber(selectedPackage.rate_limit_per_hour)}
                 </p>
-                <p className="text-[9px] text-slate-400">Req / hour</p>
+                <p className="text-[11px] text-ink-muted">Req / hour</p>
               </div>
             </div>
           </div>
         ) : null}
 
-        <p className="break-all font-mono text-[9px] text-slate-400">
+        <p className="break-all font-mono text-[11px] text-ink-muted">
           subscription_id: {subscriptionId}
         </p>
       </div>
