@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  BookOpen,
   Building2,
   ChevronDown,
   CreditCard,
@@ -14,7 +15,6 @@ import {
   Menu,
   Package,
   QrCode,
-  Webhook,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -37,13 +37,13 @@ const MERCHANT_NAV: NavItem[] = [
   { href: "/api-keys", label: "API Keys", icon: KeyRound },
   { href: "/subscription", label: "แพ็กเกจ & โควต้า", icon: CreditCard },
   { href: "/payments", label: "PromptPay Playground", icon: QrCode },
+  { href: "/developer-docs", label: "Developer Docs", icon: BookOpen },
 ];
 
 const ADMIN_NAV: NavItem[] = [
   { href: "/admin/dashboard", label: "Platform Overview", icon: LayoutDashboard, exact: true },
   { href: "/admin/businesses", label: "ร้านค้า & Subscription", icon: Building2 },
   { href: "/admin/packages", label: "Master Packages", icon: Package },
-  { href: "/admin/webhook-simulator", label: "Webhook Simulator", icon: Webhook },
 ];
 
 function isActive(pathname: string, item: NavItem) {
@@ -295,18 +295,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     className="animate-popover-in absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-panel border border-line bg-surface shadow-raised"
                   >
                     <div className="border-b border-line p-4">
-                      <p className="text-sm font-semibold text-ink">{user?.username}</p>
-                      <p className="mt-0.5 break-all font-mono text-[11px] text-ink-muted">
-                        {user?.user_id}
-                      </p>
-                      <div className="mt-2 flex items-center gap-1.5">
-                        <Badge tone={isAdmin ? "brand" : "neutral"}>{role}</Badge>
-                        {user?.business_id ? (
-                          <span className="max-w-[150px] truncate text-[11px] text-ink-muted">
-                            {user.business_id}
-                          </span>
-                        ) : null}
-                      </div>
+                      <span className="text-sm font-semibold text-ink mr-2">{user?.username}</span><Badge tone={isAdmin ? "brand" : "neutral"}>{role}</Badge>
                     </div>
                     <button
                       type="button"

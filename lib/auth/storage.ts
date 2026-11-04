@@ -114,23 +114,6 @@ export function updateTokens(tokens: Pick<TokenBundle, "access_token" | "refresh
   return next;
 }
 
-/**
- * Patches the stored user (e.g. after a successful LINE linking) and persists it,
- * so `useAuth()` reflects the change without a re-login. `saveSession` already
- * dispatches the storage event other tabs/components listen to.
- */
-export function updateStoredUser(patch: Partial<AuthUserSummary>): StoredSession | null {
-  const current = loadSession();
-  if (!current) return null;
-
-  const next: StoredSession = {
-    ...current,
-    user: { ...current.user, ...patch },
-  };
-  saveSession(next);
-  return next;
-}
-
 export function clearSession() {
   if (!canUseStorage()) return;
   window.localStorage.removeItem(SESSION_KEY);

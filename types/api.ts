@@ -45,8 +45,6 @@ export interface AuthUserSummary {
   username: string;
   role: UserRole;
   business_id: string | null;
-  /** Bound LINE User ID; null until the business completes the linking flow (always null for admin). */
-  line_user_id: string | null;
 }
 
 export interface TokenBundle {
@@ -85,7 +83,6 @@ export interface RegisterBusinessData {
   business_name: string;
   email: string;
   promptpay_id: string;
-  line_user_id: string | null;
 }
 
 export interface CreateQrRequest {
@@ -105,25 +102,6 @@ export interface CreateQrData {
   redirect_url: string | null;
   expires_at: string;
   api_key_id: string | null;
-  line_user_id: string | null;
-  is_line_link: boolean;
-}
-
-/** Response of `POST /payments/line/link-qr` — the 0.01–0.99 verification order. */
-export interface LinkLineQrData {
-  order_id: string;
-  lookup_key: string;
-  base_amount: 0;
-  decimal_ref: number;
-  total_amount: number;
-  qr_payload: string;
-  qr_image: string;
-  status: PaymentOrderStatus;
-  redirect_url: null;
-  expires_at: string;
-  api_key_id: null;
-  line_user_id: null;
-  is_line_link: true;
 }
 
 export interface PaymentOrderDetailData {
@@ -138,8 +116,6 @@ export interface PaymentOrderDetailData {
   callback_sent: boolean;
   callback_status_code: number | null;
   redirect_url: string | null;
-  line_user_id: string | null;
-  is_line_link: boolean;
   expires_at: string;
   paid_at: string | null;
   created_at: string;
@@ -156,27 +132,6 @@ export interface MerchantCallbackPayload {
   total_amount: number;
   status: "PAID";
   paid_at: string;
-}
-
-export interface LineWebhookRequest {
-  destination?: string;
-  events: Array<{
-    type?: string;
-    timestamp?: number;
-    source?: {
-      type?: string;
-      userId?: string;
-    };
-    message?: {
-      type: string;
-      id: string;
-      text?: string;
-    };
-  }>;
-}
-
-export interface WebhookProcessedData {
-  processed: number;
 }
 
 export interface Package {

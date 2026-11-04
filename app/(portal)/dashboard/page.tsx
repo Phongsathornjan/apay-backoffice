@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Activity,
-  ArrowUpRight,
-  Banknote,
   CreditCard,
   KeyRound,
   QrCode,
@@ -13,7 +11,6 @@ import {
   RefreshCw,
   ShieldCheck,
   Wallet,
-  Webhook,
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 import {
@@ -35,7 +32,6 @@ import { PageHeader } from "@/components/ui/page-header";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { BusinessContextNotice } from "@/components/dashboard/business-context";
 import { SubscriptionBanner } from "@/components/dashboard/subscription-banner";
-import { LineLinkCard } from "@/components/dashboard/line-link-card";
 import { DateRangePicker } from "@/components/dashboard/date-range-picker";
 import { ChartCard } from "@/components/charts/chart-card";
 import { STATUS_COLORS } from "@/lib/chart-colors";
@@ -133,14 +129,9 @@ export default function MerchantDashboardPage() {
     ? [
         { name: "PAID", value: statusBreakdown.PAID, color: STATUS_COLORS.paid },
         {
-          name: "UNVERIFIED · active",
+          name: "UNVERIFIED",
           value: statusBreakdown.UNVERIFIED.active,
           color: STATUS_COLORS.unverifiedActive,
-        },
-        {
-          name: "UNVERIFIED · expired",
-          value: statusBreakdown.UNVERIFIED.expired,
-          color: STATUS_COLORS.unverifiedExpired,
         },
         { name: "EXPIRED", value: statusBreakdown.EXPIRED, color: STATUS_COLORS.expired },
       ]
@@ -189,8 +180,8 @@ export default function MerchantDashboardPage() {
           actions={<DateRangePicker value={range} onChange={setRange} />}
         />
         <Skeleton className="h-[166px] w-full rounded-panel" />
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
             <KpiSkeleton key={index} />
           ))}
         </div>
@@ -217,17 +208,6 @@ export default function MerchantDashboardPage() {
       <PageHeader
         eyebrow={isAdminView ? "Admin · merchant drill-down" : "Merchant overview"}
         title={overview.business.name || "ภาพรวมร้านค้า"}
-        description={
-          <span className="flex flex-wrap items-center gap-2">
-            <span>ข้อมูลช่วง {range.interval === "hour" ? "รายชั่วโมง" : "รายวัน"} · เขตเวลาไทย</span>
-            {subscription ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-medium text-ink-secondary">
-                <ShieldCheck className="size-3 text-success-ink" />
-                {subscription.package_name}
-              </span>
-            ) : null}
-          </span>
-        }
         actions={
           <>
             <DateRangePicker value={range} onChange={setRange} />
@@ -250,36 +230,23 @@ export default function MerchantDashboardPage() {
 
       <SubscriptionBanner subscription={subscription} adminView={isAdminView} />
 
-      <LineLinkCard adminView={isAdminView} />
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <KpiCard
           label="ยอดรับชำระรวม"
           value={formatCurrency(transactions?.gmv)}
-          hint={`จาก ${formatNumber(transactions?.paid_count)} รายการที่ชำระสำเร็จ`}
           icon={Wallet}
           tone="brand"
         />
         <KpiCard
           label="ค่าเฉลี่ยต่อบิล"
           value={formatCurrency(transactions?.average_order_value)}
-          hint={`Paid rate ${formatPercent(transactions?.paid_rate)}`}
           icon={ReceiptText}
           tone="info"
         />
         <KpiCard
-          label="รายการทั้งหมด"
-          value={formatNumber(transactions?.orders_created)}
-          hint={`Paid ${formatNumber(transactions?.paid_count)} · Expired ${formatNumber(
-            transactions?.expired_count,
-          )} · Active ${formatNumber(transactions?.active_unverified_count)}`}
-          icon={Banknote}
-          tone="neutral"
-        />
-        <KpiCard
           label="ชำระเงินสำเร็จ"
           value={`${formatNumber(usageData?.qr_paid)}`}
-          hint={`คิดเป็น ${(usageData?.qr_paid ?? 0) / Math.max(transactions?.orders_created ?? 1, 1) * 100}% ของรายการทั้งหมด`}
+          hint={`${(usageData?.qr_paid ?? 0) / Math.max(transactions?.orders_created ?? 1, 1) * 100}%`}
           icon={QrCode}
           tone="success"
         />
@@ -288,9 +255,7 @@ export default function MerchantDashboardPage() {
           value={subscription ? formatNumber(subscription.quota_remaining) : "—"}
           hint={
             subscription
-              ? `ใช้ไป ${formatPercent(quotaRatio)} ของ ${formatNumber(
-                  subscription.quota_limit,
-                )} ครั้ง`
+              ? `${formatPercent(quotaRatio)}`
               : "ยังไม่มีแพ็กเกจที่ใช้งาน"
           }
           icon={CreditCard}
@@ -306,7 +271,7 @@ export default function MerchantDashboardPage() {
           value={`${formatNumber(overview.api_keys.used)} / ${formatNumber(
             overview.api_keys.max,
           )}`}
-          hint={`Active ${formatNumber(overview.api_keys.active)} คีย์`}
+          hint={`Active ${formatNumber(overview.api_keys.active)} / Inactive ${formatNumber(overview.api_keys.used - overview.api_keys.active)}`}
           icon={KeyRound}
           tone="brand"
           footer={<Progress value={overview.api_keys.max ? (overview.api_keys.used / overview.api_keys.max) * 100 : 0} tone="brand" />}
@@ -316,28 +281,10 @@ export default function MerchantDashboardPage() {
           value={`${formatNumber(overview.rate_limit.requests_last_hour)} / ${formatNumber(
             overview.rate_limit.limit,
           )}`}
-          hint={`ใช้ไป ${formatPercent(overview.rate_limit.utilization)} · เหลือ ${formatNumber(
-            overview.rate_limit.remaining,
-          )} คำขอ`}
+          hint={`${formatPercent(overview.rate_limit.utilization)}`}
           icon={Activity}
           tone={overview.rate_limit.utilization >= 0.8 ? "danger" : "neutral"}
           footer={<Progress value={overview.rate_limit.utilization * 100} tone={quotaTone(overview.rate_limit.utilization)} />}
-        />
-        <KpiCard
-          label="Webhook ที่จับคู่สำเร็จ"
-          value={formatNumber(overview.webhook.matched)}
-          hint="รายการ KBank LINE ที่ยืนยันยอดและเปลี่ยนเป็น PAID"
-          icon={Webhook}
-          tone="success"
-          footer={
-            <Link
-              href="/payments"
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-ink hover:text-brand"
-            >
-              เปิด Payment Inspector
-              <ArrowUpRight className="size-3" />
-            </Link>
-          }
         />
       </div>
 
@@ -345,7 +292,6 @@ export default function MerchantDashboardPage() {
         <ChartCard
           className="xl:col-span-2"
           title="ปริมาณธุรกรรม"
-          description="เปรียบเทียบคำสั่งซื้อที่สร้าง ชำระสำเร็จ และหมดอายุ"
           action={
             <ChartLegend
               items={transactionSeries.map((serie) => ({ label: serie.label }))}
@@ -357,7 +303,6 @@ export default function MerchantDashboardPage() {
 
         <ChartCard
           title="สัดส่วนสถานะรายการ"
-          description={`ทั้งหมด ${formatNumber(statusTotal)} รายการในช่วงนี้`}
         >
           <DonutChart
             data={statusData}
@@ -387,8 +332,7 @@ export default function MerchantDashboardPage() {
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard
           className="xl:col-span-2"
-          title="GMV และค่าเฉลี่ยต่อบิล"
-          description="แท่ง = GMV, เส้น = Average Order Value (THB)"
+          title="ภาพรวมรายได้"
         >
           <FinancialChart
             series={transactionSeries.filter((serie) =>
@@ -420,8 +364,8 @@ export default function MerchantDashboardPage() {
           <div className="mx-4 mb-1 grid grid-cols-3 gap-2 border-t border-line pt-3">
             {[
               { label: "Requests", value: rateLimit?.requests_last_hour ?? 0 },
-              { label: "Limit", value: rateLimit?.limit_per_hour ?? 0 },
               { label: "Remaining", value: rateLimit?.remaining ?? 0 },
+              { label: "Limit", value: rateLimit?.limit_per_hour ?? 0 },
             ].map((item) => (
               <div key={item.label} className="text-center">
                 <p className="font-mono text-sm font-semibold tabular-nums text-ink">
@@ -439,8 +383,7 @@ export default function MerchantDashboardPage() {
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard
           className="xl:col-span-2"
-          title="การใช้งาน QR และโควต้า"
-          description="ข้อมูลแบบ zero-fill ทุก bucket ตามเขตเวลา Asia/Bangkok"
+          title="การใช้งานแยกตาม API Key"
           action={
             <div className="flex flex-wrap items-center gap-2">
               <select
@@ -501,8 +444,7 @@ export default function MerchantDashboardPage() {
         </ChartCard>
 
         <ChartCard
-          title="คำขอรายชั่วโมง"
-          description="Rate limit utilization ย้อนหลัง"
+          title="Rate limit utilization"
         >
           <PointsAreaChart
             points={rateLimit?.series ?? []}

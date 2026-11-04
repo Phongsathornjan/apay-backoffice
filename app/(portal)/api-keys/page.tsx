@@ -16,6 +16,7 @@ import type { DashboardApiKeyBreakdownData, DashboardApiKeyTimeseriesData } from
 import { useAuth } from "@/components/auth/auth-provider";
 import { getApiKeyBreakdown, getApiKeyTimeseries } from "@/services/dashboard";
 import { revokeApiKey, updateApiKey } from "@/services/api-keys";
+import { rememberPlaygroundApiKey } from "@/lib/playground-key";
 import { ApiError } from "@/services/api";
 import { useApiData } from "@/lib/hooks/use-api-data";
 import { buildPresetRange, rangeQuery, type DateRangeValue } from "@/lib/date-range";
@@ -247,9 +248,9 @@ export default function ApiKeysPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {breakdown.isLoading || !summary ? (
-          Array.from({ length: 4 }).map((_, index) => (
+          Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="rounded-panel border border-line bg-surface p-5">
               <Skeleton className="h-3 w-24" />
               <Skeleton className="mt-4 h-8 w-20" />
@@ -261,14 +262,12 @@ export default function ApiKeysPage() {
             <KpiCard
               label="Active Keys"
               value={formatNumber(summary.active_keys)}
-              hint="Key ที่ยังเปิดใช้งาน"
               icon={ShieldCheck}
               tone="success"
             />
             <KpiCard
               label="Revoked / Deleted"
               value={formatNumber(summary.revoked_keys)}
-              hint="ยังเก็บประวัติการใช้งาน"
               icon={ShieldOff}
               tone="danger"
             />
@@ -293,15 +292,6 @@ export default function ApiKeysPage() {
                 />
               }
             />
-            <KpiCard
-              label="QR ในช่วงเวลานี้"
-              value={formatNumber(keys.reduce((sum, key) => sum + key.qr_created, 0))}
-              hint={`Paid ${formatNumber(
-                keys.reduce((sum, key) => sum + key.qr_paid, 0),
-              )} · ${formatNumber(keys.length)} คีย์ในช่วง ${range.interval}`}
-              icon={Eye}
-              tone="neutral"
-            />
           </>
         )}
       </div>
@@ -309,8 +299,7 @@ export default function ApiKeysPage() {
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard
           className="xl:col-span-2"
-          title="Usage แยกตาม API Key"
-          description="Top 10 + Other · เรียงตาม metric ที่เลือก"
+          title="การใช้งานแยกตาม API Key"
           action={
             <select
               value={metric}
@@ -596,6 +585,7 @@ export default function ApiKeysPage() {
         isAdmin={isAdmin}
         onClose={() => setCreateOpen(false)}
         onCreated={(key) => {
+          rememberPlaygroundApiKey(businessId, key.api_key);
           setCreateOpen(false);
           setCreatedKey(key);
           refetchAll();

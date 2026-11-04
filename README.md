@@ -1,8 +1,8 @@
 # APay Backoffice
 
 Modern fintech backoffice for the APay Payment Gateway. It covers PromptPay QR
-creation, KBank LINE webhook verification, prepaid subscriptions/quota,
-multi-key API access and role-scoped analytics for `admin` and `business` users.
+creation, KBank notification matching, prepaid subscriptions/quota, multi-key API
+access and role-scoped analytics for `admin` and `business` users.
 
 ## Stack
 
@@ -60,7 +60,6 @@ The client always appends `/api/v1`.
 | `/admin/dashboard` | Admin | MRR/ARR, platform GMV, webhook match rate and actionable alerts |
 | `/admin/businesses` | Admin | Search/filter/sort, register business, assign package and renew |
 | `/admin/packages` | Admin | Master package CRUD with soft-delete conflict handling |
-| `/admin/webhook-simulator` | Admin | KBank LINE payload generator and live webhook test |
 
 Admin users can pick a merchant through the **Business Switcher** in the topbar
 to view merchant pages in that business context.
@@ -84,7 +83,7 @@ lib/
   format.ts           THB, percentages, dates and tabular number formatting
 services/
   api.ts              HTTP client, envelopes, correlation IDs and token rotation
-  auth.ts, dashboard.ts, api-keys.ts, packages.ts, subscriptions.ts, payments.ts, webhooks.ts
+  auth.ts, dashboard.ts, api-keys.ts, packages.ts, subscriptions.ts, payments.ts
 types/
   api.ts              API v1 request/response contracts from the API docs
 ```
@@ -120,19 +119,16 @@ store so login, refresh rotation and cross-tab changes stay in sync. For a
 production deployment with a same-origin backend, prefer an httpOnly-cookie BFF
 instead of exposing tokens to JavaScript.
 
-### LINE linking without browser callbacks
+### Payment matching
 
-LINE linking uses **polling only**. After the 0.01–0.99 verification QR is
-created, the modal calls `GET /payments/orders/:id` every 3 seconds until the
-order becomes `PAID` and `line_user_id` is available.
+Matching is amount-based only: the backend reserves a `0.01–0.99` decimal
+reference for each order and pairs it with the KBank transfer notification
+(`POST /api/v1/webhooks/kbank/ios-notify`). The backoffice does not parse or
+simulate payment notifications — it creates QR orders and polls
+`GET /payments/orders/:id` every 3 seconds until the order becomes `PAID`.
 
-- No callback Route Handlers, SSE stream, in-memory event bus, or callback URL
-  environment variable are required.
-- There is intentionally no backend-to-browser callback: a browser tab cannot
-  receive an HTTP POST. The browser owns the `order_id` and asks for the latest
-  state itself.
-- Merchant webhook callbacks to a merchant server are separate from this flow
-  and are not consumed by the backoffice UI.
+Merchant webhook callbacks to a merchant server are separate from this flow and
+are not consumed by the backoffice UI.
 
 ## Useful commands
 

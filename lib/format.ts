@@ -143,13 +143,6 @@ export function maskKeyPrefix(prefix: string | null | undefined): string {
   return `${prefix}${"•".repeat(12)}`;
 }
 
-/** Masks a LINE User ID for display: `U••••••a1b2`. */
-export function maskLineUserId(lineUserId: string | null | undefined): string {
-  if (!lineUserId) return "—";
-  if (lineUserId.length <= 5) return lineUserId;
-  return `${lineUserId.slice(0, 1)}••••••${lineUserId.slice(-4)}`;
-}
-
 /** `mm:ss` (or `hh:mm:ss` when an hour or more remains) for QR TTL countdowns. */
 export function formatCountdown(seconds: number): string {
   if (seconds <= 0) return "00:00";

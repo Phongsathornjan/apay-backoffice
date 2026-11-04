@@ -269,7 +269,7 @@ Do not treat `UNVERIFIED` as `PAID`. Never imply a transfer is confirmed unless 
 
 ## 10. Product Truth and Trust
 
-APay is presented as a tool for PromptPay QR generation, LINE notification matching, and HTTP callbacks. The UI must not overstate the current integration capabilities.
+APay is presented as a tool for PromptPay QR generation, KBank notification matching, and HTTP callbacks. The UI must not overstate the current integration capabilities.
 
 - Clearly distinguish notification-based matching from direct bank-side transaction verification.
 - Do not claim universal bank support when only a subset is available.

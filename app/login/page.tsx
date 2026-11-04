@@ -88,7 +88,7 @@ export default function LoginPage() {
             <span className="text-gradient-brand">แม่นยำทุกสตางค์</span>
           </h1>
           <p className="mt-5 max-w-md text-sm leading-7 text-ink-secondary">
-            จัดการ PromptPay QR, ตรวจสอบยอดโอนผ่าน KBank LINE Webhook,
+            จัดการ PromptPay QR, ตรวจสอบยอดโอนจากการแจ้งเตือนเงินเข้าของ KBank,
             ควบคุมโควต้าและ API Key ของร้านค้าในศูนย์กลางเดียว
           </p>
 
@@ -96,18 +96,18 @@ export default function LoginPage() {
             {[
               {
                 icon: QrCode,
-                title: "PromptPay QR อัตโนมัติ",
-                description: "จองเศษสตางค์อ้างอิง (.01–.99) และจับคู่ยอดโอนได้แม่นยำ",
+                title: "PromptPay QR",
+                description: "จับคู่ยอดโอนได้แม่นยำ ด้วยทศนิยม 2 ตำแหน่ง",
               },
               {
                 icon: Webhook,
-                title: "KBank LINE Verification",
-                description: "ตรวจข้อความเงินเข้า ป้องกันรายการซ้ำ และยืนยันยอดแบบเรียลไทม์",
+                title: "Notification Matching",
+                description: "ตรวจการแจ้งเตือนเงินเข้า ป้องกันรายการซ้ำ และยืนยันยอดแบบเรียลไทม์",
               },
               {
                 icon: ShieldCheck,
                 title: "Prepaid & Quota Controls",
-                description: "ติดตาม paid-through, โควต้า และ rate limit ต่อร้านค้า",
+                description: "ระบบหลังบ้าน ดูสิถิติย้อนหลังและวิเคราะห์รายได้",
               },
             ].map((item) => (
               <div

@@ -1,7 +1,6 @@
 import type {
   CreateQrData,
   CreateQrRequest,
-  LinkLineQrData,
   PaymentOrderDetailData,
 } from "@/types/api";
 import { exchangeApiKey } from "@/services/auth";
@@ -19,17 +18,9 @@ export function createQr(
 }
 
 /**
- * Creates the 0.01–0.99 verification order used to bind a LINE User ID to the
- * business. The backoffice discovers the linked state by polling
- * `GET /payments/orders/:id` every 3 seconds — no browser callback is used.
+ * Fetches the latest order state. The backoffice polls this endpoint to track
+ * payment matching without any browser callback.
  */
-export function createLineLinkQr(accessToken?: string): Promise<LinkLineQrData> {
-  return apiRequest<LinkLineQrData>("/payments/line/link-qr", {
-    method: "POST",
-    ...(accessToken ? { accessToken, skipAuthRefresh: true } : {}),
-  });
-}
-
 export function getPaymentOrder(
   orderId: string,
   accessToken?: string,
@@ -53,41 +44,6 @@ export async function createQrWithApiKey(
   const token = await exchangeApiKey(apiKey.trim());
   const order = await createQr(payload, token.access_token);
   return { order, accessToken: token.access_token };
-}
-
-export interface ApiKeyLineLinkQrResult {
-  order: LinkLineQrData;
-  accessToken: string;
-}
-
-/**
- * Admin (Raw API Key mode) flow: exchange the business API key and create the
- * LINE linking order on its behalf.
- */
-export async function createLineLinkQrWithApiKey(
-  apiKey: string,
-): Promise<ApiKeyLineLinkQrResult> {
-  const token = await exchangeApiKey(apiKey.trim());
-  const order = await createLineLinkQr(token.access_token);
-  return { order, accessToken: token.access_token };
-}
-
-/** `403` raised by `POST /payments/qr` while the business has no LINE User ID. */
-export function isLineNotLinkedError(error: unknown): boolean {
-  return (
-    error instanceof ApiError &&
-    error.status === 403 &&
-    error.message.includes("not linked to a LINE user")
-  );
-}
-
-/** `409` raised by `POST /payments/line/link-qr` when the business is already linked. */
-export function isAlreadyLinkedError(error: unknown): boolean {
-  return (
-    error instanceof ApiError &&
-    error.status === 409 &&
-    error.message.includes("already linked to a LINE user")
-  );
 }
 
 /** `409` raised when all 99 decimal reference slots of the base amount are taken. */

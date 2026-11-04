@@ -1,64 +1,57 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import {
   CheckCircle2,
   Clock3,
   Eye,
   EyeOff,
   KeyRound,
-  Link2,
   Loader2,
   QrCode,
   RefreshCw,
   Search,
   ShieldCheck,
-  TimerReset,
 } from "lucide-react";
-import type { CreateQrData, LinkLineQrData, PaymentOrderDetailData } from "@/types/api";
+import type { CreateQrData, PaymentOrderDetailData } from "@/types/api";
 import { useAuth } from "@/components/auth/auth-provider";
-import {
-  createLineLinkQrWithApiKey,
-  createQr,
-  createQrWithApiKey,
-  getPaymentOrder,
-  isAlreadyLinkedError,
-  isLineNotLinkedError,
-} from "@/services/payments";
+import { createQrWithApiKey, getPaymentOrder } from "@/services/payments";
 import { ApiError } from "@/services/api";
 import {
-  formatCountdown,
   formatCurrency,
   formatDateTime,
   formatTime,
-  maskLineUserId,
 } from "@/lib/format";
 import { validateAmount, validateHttpsUrl } from "@/lib/validators";
-import { LineLinkModal } from "@/components/payments/line-link-modal";
-import { BankSupportChips } from "@/components/payments/bank-picker";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardBody } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge, StatusBadge } from "@/components/ui/badge";
 import { FormField, Input } from "@/components/ui/form";
-import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/ui/copy-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorNotice, useToast } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { loadPlaygroundApiKey, subscribePlaygroundApiKey } from "@/lib/playground-key";
+import { PromptPaySlip } from "@/components/payments/promptpay-slip";
 import { cn } from "@/lib/utils";
-
-type TokenMode = "session" | "api_key";
 
 const DEFAULT_REDIRECT_URL = "https://merchant.example.com/webhooks/apay";
 
 export default function PaymentsPage() {
-  const { role, lineUserId, isLineLinked, setLineUserId } = useAuth();
-  const { notifyError, success, info } = useToast();
-  const isAdmin = role === "admin";
+  const { businessId, activeBusiness } = useAuth();
+  const { notifyError, success } = useToast();
 
-  const [tokenMode, setTokenMode] = useState<TokenMode>(isAdmin ? "api_key" : "session");
-  const [apiKey, setApiKey] = useState("");
+  // API Key ตัวแรกที่เคยสร้างจะถูกจำไว้และเติมให้อัตโนมัติ (อ่านจาก localStorage
+  // ผ่าน external store เพื่อไม่ให้ค่าใน input ต่างกันระหว่าง SSR กับ client)
+  const storedApiKey = useSyncExternalStore(
+    subscribePlaygroundApiKey,
+    () => loadPlaygroundApiKey(businessId),
+    () => "",
+  );
+  const [draftApiKey, setDraftApiKey] = useState<string | null>(null);
+  const apiKey = draftApiKey ?? storedApiKey;
+
   const [showApiKey, setShowApiKey] = useState(false);
   const [amount, setAmount] = useState("100");
   const [redirectUrl, setRedirectUrl] = useState(DEFAULT_REDIRECT_URL);
@@ -72,22 +65,10 @@ export default function PaymentsPage() {
   const [checkingOrder, setCheckingOrder] = useState(false);
   const paidNotified = useRef<string | null>(null);
 
-  // LINE linking (business session mode + admin Raw API Key mode).
-  const [linkModalOpen, setLinkModalOpen] = useState(false);
-  const [adminLink, setAdminLink] = useState<{
-    order: LinkLineQrData;
-    accessToken: string;
-  } | null>(null);
-  const [adminLinkStarting, setAdminLinkStarting] = useState(false);
-  const [showAdminLinkCta, setShowAdminLinkCta] = useState(false);
-
   const [inspectId, setInspectId] = useState("");
   const [inspected, setInspected] = useState<PaymentOrderDetailData | null>(null);
   const [inspectLoading, setInspectLoading] = useState(false);
   const [inspectError, setInspectError] = useState<unknown>(null);
-
-  // Only the business' own JWT is gated: a raw API key may belong to another shop.
-  const lineGateActive = role === "business" && tokenMode === "session" && !isLineLinked;
 
   const expiresAt = created ? new Date(created.expires_at).getTime() : 0;
   const remaining = created ? Math.max(0, Math.ceil((expiresAt - now) / 1000)) : 0;
@@ -150,12 +131,10 @@ export default function PaymentsPage() {
     if (!amountValidation.valid) nextErrors.amount = amountValidation.message;
     const urlValidation = validateHttpsUrl(redirectUrl);
     if (!urlValidation.valid) nextErrors.redirect = urlValidation.message;
-    if (tokenMode === "api_key") {
-      if (!apiKey.trim()) {
-        nextErrors.apiKey = "กรุณากรอก API Key สำหรับโหมดทดสอบ";
-      } else if (!apiKey.trim().startsWith("apay_live_")) {
-        nextErrors.apiKey = "API Key ต้องขึ้นต้นด้วย apay_live_";
-      }
+    if (!apiKey.trim()) {
+      nextErrors.apiKey = "กรุณากรอก API Key สำหรับโหมดทดสอบ";
+    } else if (!apiKey.trim().startsWith("apay_live_")) {
+      nextErrors.apiKey = "API Key ต้องขึ้นต้นด้วย apay_live_";
     }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -163,10 +142,6 @@ export default function PaymentsPage() {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (lineGateActive) {
-      setLinkModalOpen(true);
-      return;
-    }
     if (!validate()) return;
 
     setSubmitting(true);
@@ -174,81 +149,24 @@ export default function PaymentsPage() {
     setDetailed(null);
     setNow(Date.now());
     paidNotified.current = null;
-    setShowAdminLinkCta(false);
     try {
       const payload = {
         amount: Number(amount),
         redirect_url: redirectUrl.trim(),
       };
 
-      if (tokenMode === "api_key") {
-        const result = await createQrWithApiKey(apiKey.trim(), payload);
-        setCreated(result.order);
-        setInspectId(result.order.order_id);
-        setApiKey("");
-      } else {
-        const order = await createQr(payload);
-        setCreated(order);
-        setInspectId(order.order_id);
-      }
+      const result = await createQrWithApiKey(apiKey.trim(), payload);
+      setCreated(result.order);
+      setInspectId(result.order.order_id);
 
       success("สร้าง PromptPay QR สำเร็จ — เริ่มติดตามสถานะอัตโนมัติ", {
         title: "QR created",
       });
     } catch (cause) {
-      if (isLineNotLinkedError(cause)) {
-        if (role === "business" && tokenMode === "session") {
-          setLinkModalOpen(true);
-          info("ต้องผูก LINE ก่อนสร้าง QR รับเงิน", { title: "LINE ยังไม่ผูก" });
-        } else {
-          setShowAdminLinkCta(true);
-          info(
-            "ร้านค้านี้ยังไม่ได้ผูก LINE — สร้าง QR ยืนยันเพื่อผูก LINE ให้ร้านค้าก่อน",
-            { title: "LINE ยังไม่ผูก" },
-          );
-        }
-      } else if (isAlreadyLinkedError(cause)) {
-        setShowAdminLinkCta(false);
-        info("ร้านค้านี้ผูก LINE ไว้แล้ว — กรุณาสร้าง QR อีกครั้ง", {
-          title: "ผูก LINE แล้ว",
-        });
-      } else {
-        notifyError(cause, "สร้าง QR ไม่สำเร็จ");
-      }
+      notifyError(cause, "สร้าง QR ไม่สำเร็จ");
     } finally {
       setSubmitting(false);
     }
-  };
-
-  /** Admin Raw API Key mode: create the 0.01–0.99 linking QR for the merchant. */
-  const startAdminLink = async () => {
-    if (!apiKey.trim()) {
-      setErrors((current) => ({ ...current, apiKey: "กรุณากรอก API Key ก่อนสร้าง QR ผูก LINE" }));
-      return;
-    }
-    setAdminLinkStarting(true);
-    try {
-      const result = await createLineLinkQrWithApiKey(apiKey.trim());
-      setAdminLink(result);
-      setShowAdminLinkCta(false);
-      setLinkModalOpen(true);
-    } catch (cause) {
-      if (isAlreadyLinkedError(cause)) {
-        setShowAdminLinkCta(false);
-        info("ร้านค้านี้ผูก LINE ไว้แล้ว — กรุณาสร้าง QR อีกครั้ง", {
-          title: "ผูก LINE แล้ว",
-        });
-      } else {
-        notifyError(cause, "สร้าง QR ผูก LINE ไม่สำเร็จ");
-      }
-    } finally {
-      setAdminLinkStarting(false);
-    }
-  };
-
-  const closeLinkModal = () => {
-    setLinkModalOpen(false);
-    setAdminLink(null);
   };
 
   const refreshOrder = async () => {
@@ -291,9 +209,9 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        eyebrow="PromptPay playground"
-        title="Payment Inspector"
-        description="สร้าง QR ทดสอบ ตรวจสอบเศษสตางค์อ้างอิง และติดตามสถานะคำสั่งซื้อแบบเรียลไทม์"
+        eyebrow="Merchant checkout"
+        title="PromptPay Playground"
+        description="สร้าง QR ทดสอบที่หน้าตาเหมือนแอปธนาคารจริง ตรวจสอบเศษสตางค์อ้างอิง และติดตามสถานะคำสั่งซื้อแบบเรียลไทม์"
         actions={
           <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 text-[11px] text-ink-secondary">
             <span className="relative flex size-2">
@@ -304,34 +222,6 @@ export default function PaymentsPage() {
           </div>
         }
       />
-
-      {role === "business" && !isLineLinked ? (
-        <Card className="border-warning-border bg-warning-soft">
-          <CardBody className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-card bg-surface text-warning-ink shadow-card">
-                <Link2 className="size-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-warning-ink">
-                  ยังไม่ได้ผูก LINE — ต้องผูก LINE ก่อนสร้าง QR รับเงิน
-                </p>
-                <p className="mt-0.5 text-[11px] leading-5 text-warning-ink">
-                  สแกนจ่าย QR ยืนยันยอด 0.01–0.99 ด้วยบัญชีธนาคารที่ผูก LINE ไว้กับ APay
-                  ระบบจะเชื่อม LINE ของคุณกับร้านค้าอัตโนมัติ
-                </p>
-                <BankSupportChips className="mt-1.5" />
-              </div>
-            </div>
-            <Button
-              onClick={() => setLinkModalOpen(true)}
-              icon={<Link2 className="size-4" />}
-            >
-              ผูก LINE
-            </Button>
-          </CardBody>
-        </Card>
-      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         <Card className="overflow-hidden">
@@ -348,76 +238,48 @@ export default function PaymentsPage() {
                   </p>
                 </div>
               </div>
-              {role === "business" && isLineLinked ? (
-                <Badge tone="success" dot>
-                  LINE linked · {maskLineUserId(lineUserId)}
-                </Badge>
-              ) : null}
             </div>
           </div>
 
           <CardBody className="space-y-4">
-            <div>
-              <p className="mb-1.5 text-xs font-semibold text-ink">โหมด Authentication</p>
-              <SegmentedControl
-                value={tokenMode}
-                onChange={setTokenMode}
-                options={
-                  isAdmin
-                    ? [{ value: "api_key", label: "Raw API Key" }]
-                    : [
-                        { value: "session", label: "ใช้ JWT ปัจจุบัน" },
-                        { value: "api_key", label: "Raw API Key" },
-                      ]
-                }
-                className="w-full"
-              />
-              {isAdmin ? (
-                <p className="mt-2 rounded-control border border-brand-border bg-brand-soft px-2.5 py-2 text-[11px] leading-4 text-brand-ink">
-                  Admin ต้องใช้ Raw API Key เพื่อทดสอบในนามของร้านค้า
-                  เนื่องจาก JWT ของ Admin ไม่ผูกกับธุรกิจ
-                </p>
-              ) : null}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-ink">Authentication</p>
+              <Badge tone="brand">
+                <KeyRound className="size-3" />
+                Raw API Key
+              </Badge>
             </div>
 
-            {tokenMode === "api_key" ? (
-              <FormField
-                label="API Key"
-                htmlFor="api-key-input"
-                error={errors.apiKey}
-                hint="ไม่ถูกบันทึกหรือส่งออกนอกเบราว์เซอร์"
-              >
-                <div className="relative">
-                  <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
-                  <Input
-                    id="api-key-input"
-                    type={showApiKey ? "text" : "password"}
-                    value={apiKey}
-                    onChange={(event) => {
-                      setApiKey(event.target.value);
-                      setErrors((current) => ({ ...current, apiKey: undefined }));
-                    }}
-                    placeholder="apay_live_xxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                    className="pl-10 pr-10 font-mono text-[11px]"
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowApiKey((value) => !value)}
-                    aria-label={showApiKey ? "ซ่อน API Key" : "แสดง API Key"}
-                    className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted"
-                  >
-                    {showApiKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </div>
-              </FormField>
-            ) : (
-              <div className="rounded-card border border-info-border bg-info-soft px-3.5 py-3 text-[11px] leading-5 text-info-ink">
-                ระบบจะใช้ JWT ของบัญชีที่ล็อกอินอยู่
-                และคำสั่งซื้อจะไม่ผูกกับ API Key ใด (api_key_id = null)
+            <FormField
+              label="API Key"
+              htmlFor="api-key-input"
+              error={errors.apiKey}
+            >
+              <div className="relative">
+                <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
+                <Input
+                  id="api-key-input"
+                  type={showApiKey ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(event) => {
+                    setDraftApiKey(event.target.value);
+                    setErrors((current) => ({ ...current, apiKey: undefined }));
+                  }}
+                  placeholder="apay_live_xxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  className="pl-10 pr-10 font-mono text-[11px]"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey((value) => !value)}
+                  aria-label={showApiKey ? "ซ่อน API Key" : "แสดง API Key"}
+                  className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-control text-ink-muted hover:bg-surface-muted"
+                >
+                  {showApiKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
               </div>
-            )}
+            </FormField>
 
             <form onSubmit={submit} className="space-y-4">
               <FormField
@@ -487,46 +349,16 @@ export default function PaymentsPage() {
                 type="submit"
                 size="lg"
                 loading={submitting}
-                disabled={lineGateActive}
                 className="w-full"
                 icon={<QrCode className="size-4" />}
               >
                 สร้าง PromptPay QR
               </Button>
-
-              {lineGateActive ? (
-                <p className="flex items-start gap-2 rounded-card border border-warning-border bg-warning-soft px-3 py-2.5 text-[11px] leading-4 text-warning-ink">
-                  <Link2 className="mt-0.5 size-3.5 shrink-0" />
-                  ยังไม่ได้ผูก LINE — ต้องผูก LINE ก่อนจึงจะสร้าง QR รับเงินได้
-                  (กดปุ่ม &quot;ผูก LINE&quot; ด้านบน)
-                </p>
-              ) : null}
             </form>
 
-            {showAdminLinkCta ? (
-              <div className="rounded-card border border-warning-border bg-warning-soft p-3.5">
-                <p className="text-[11px] font-semibold text-warning-ink">
-                  ร้านค้านี้ยังไม่ได้ผูก LINE
-                </p>
-                <p className="mt-1 text-[11px] leading-4 text-warning-ink">
-                  สร้าง QR ยืนยันยอด 0.01–0.99 ให้ร้านค้าสแกนจ่ายด้วยบัญชีที่ผูก LINE ไว้กับ APay
-                  ระบบจะผูก LINE ให้อัตโนมัติ จากนั้นจึงสร้าง QR รับเงินได้
-                </p>
-                <BankSupportChips className="mt-1.5" />
-                <Button
-                  size="sm"
-                  className="mt-2.5"
-                  onClick={() => void startAdminLink()}
-                  loading={adminLinkStarting}
-                  icon={<Link2 className="size-3.5" />}
-                >
-                  สร้าง QR ผูก LINE ให้ร้านค้านี้
-                </Button>
-              </div>
-            ) : null}
             <p className="flex items-start gap-2 text-[11px] leading-4 text-ink-muted">
               <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-brand" />
-              QR มีอายุ 5 นาที และจะถูกจับคู่กับข้อความ KBank LINE
+              QR มีอายุ 5 นาที และจะถูกจับคู่กับการแจ้งเตือนเงินเข้าจากโทรศัพท์มือถือของผู้ใช้
               ที่ยอดตรงกันแบบทศนิยม 2 ตำแหน่ง
             </p>
           </CardBody>
@@ -539,6 +371,7 @@ export default function PaymentsPage() {
           remaining={remaining}
           isPaid={isPaid}
           isExpired={isExpired}
+          payeeName={activeBusiness?.name}
           lastChecked={lastChecked}
           pollError={pollError}
           checkingOrder={checkingOrder}
@@ -603,42 +436,6 @@ export default function PaymentsPage() {
           )}
         </CardBody>
       </Card>
-
-      {linkModalOpen ? (
-        <LineLinkModal
-          key={adminLink?.order.order_id ?? "session"}
-          open
-          accessToken={adminLink?.accessToken}
-          initialOrder={adminLink?.order ?? null}
-          onClose={closeLinkModal}
-          onLinked={(linkedLineUserId) => {
-            if (adminLink) {
-              // Raw API Key mode: the session belongs to someone else, nothing to sync.
-              info("ผูก LINE ให้ร้านค้าสำเร็จ — กรุณากดสร้าง QR อีกครั้ง", {
-                title: "LINE linked",
-              });
-              return;
-            }
-            if (linkedLineUserId) {
-              setLineUserId(linkedLineUserId);
-              success("ผูก LINE สำเร็จ — คุณสามารถสร้าง QR รับเงินได้แล้ว", {
-                title: "LINE linked",
-              });
-            } else {
-              info("ผูก LINE สำเร็จ แต่ยังไม่ได้รับ LINE User ID — กรุณาเข้าสู่ระบบใหม่", {
-                title: "LINE linked",
-              });
-            }
-          }}
-          onAlreadyLinked={() => {
-            setShowAdminLinkCta(false);
-            info(
-              "ร้านค้านี้ผูก LINE ไว้แล้ว — หากสถานะยังไม่ตรง กรุณาเข้าสู่ระบบใหม่หรือรีเฟรชหน้า",
-              { title: "ผูก LINE แล้ว" },
-            );
-          }}
-        />
-      ) : null}
     </div>
   );
 }
@@ -650,6 +447,7 @@ function CheckoutPanel({
   remaining,
   isPaid,
   isExpired,
+  payeeName,
   lastChecked,
   pollError,
   checkingOrder,
@@ -662,6 +460,7 @@ function CheckoutPanel({
   remaining: number;
   isPaid: boolean;
   isExpired: boolean;
+  payeeName?: string | null;
   lastChecked: Date | null;
   pollError: string | null;
   checkingOrder: boolean;
@@ -670,16 +469,21 @@ function CheckoutPanel({
 }) {
   if (!created) {
     return (
-      <Card className="flex min-h-[360px] items-center justify-center border-dashed sm:min-h-[580px]">
+      <Card className="flex min-h-[420px] items-center justify-center overflow-hidden border-dashed sm:min-h-[600px]">
         <div className="max-w-sm px-6 py-12 text-center">
-          <div className="mx-auto flex size-14 items-center justify-center rounded-panel border border-brand-border bg-brand-soft text-brand-ink">
-            <QrCode className="size-6" />
+          <div className="mx-auto w-[212px] rounded-panel border border-line bg-surface p-3 shadow-card">
+            <div className="flex items-center justify-between rounded-control bg-promptpay px-2.5 py-1.5 text-white">
+              <span className="text-[10px] font-bold tracking-tight">PromptPay</span>
+              <QrCode className="size-3" />
+            </div>
+            <div className="mt-3 flex aspect-square items-center justify-center rounded-control border border-dashed border-line-strong bg-surface-subtle">
+              <QrCode className="size-9 text-line-strong" />
+            </div>
+            <div className="mt-3 space-y-1.5">
+              <div className="mx-auto h-2 w-20 rounded-full bg-surface-muted" />
+              <div className="mx-auto h-1.5 w-14 rounded-full bg-surface-muted" />
+            </div>
           </div>
-          <h2 className="mt-4 text-base font-semibold text-ink">Checkout preview</h2>
-          <p className="mt-1.5 text-xs leading-6 text-ink-secondary">
-            ผลลัพธ์ QR, ยอดโอนสุทธิ, Decimal Reference และสถานะการชำระ
-            จะแสดงที่นี่แบบหน้า Checkout จริง
-          </p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-[11px] text-ink-muted">
             {["QR Base64", "5-min expiry", "Live status"].map((item) => (
               <div key={item} className="rounded-control border border-line bg-surface-subtle px-2 py-2">
@@ -696,8 +500,7 @@ function CheckoutPanel({
     <Card className="overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold text-ink">Checkout preview</h2>
-          <p className="font-mono text-[11px] text-ink-muted">{created.order_id}</p>
+          <h2 className="text-sm font-semibold text-ink">ตัวอย่างหน้าจอชำระเงิน</h2>
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={status} />
@@ -707,141 +510,106 @@ function CheckoutPanel({
         </div>
       </div>
 
-      <div className="relative">
-        {isPaid ? (
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 bg-success px-4 py-2 text-xs font-semibold text-white animate-success-pop">
-            <CheckCircle2 className="size-4" />
-            ชำระเงินสำเร็จแล้ว
-          </div>
-        ) : null}
-        {isExpired && !isPaid ? (
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 bg-ink/80 px-4 py-2 text-xs font-semibold text-white">
-            <TimerReset className="size-4" />
-            QR หมดอายุแล้ว
-          </div>
-        ) : null}
-
-        <div className="grid gap-0 sm:grid-cols-[220px_1fr]">
-          <div className="flex flex-col items-center justify-center border-b border-line bg-gradient-to-b from-surface-subtle to-surface p-5 sm:border-b-0 sm:border-r">
-            <div
-              className={cn(
-                "rounded-panel border-4 p-2 transition-all",
-                isPaid
-                  ? "border-success bg-surface shadow-[0_0_0_8px_var(--apay-success-soft)]"
-                  : isExpired
-                    ? "border-line-strong bg-surface opacity-60 grayscale"
-                    : "border-ink bg-surface",
-              )}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={created.qr_image}
-                alt={`PromptPay QR for order ${created.order_id}`}
-                className="size-40 rounded-control object-contain"
-              />
-            </div>
-            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
-              PromptPay · Thai QR
-            </p>
-            <div className="mt-2 flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-[11px] font-medium text-ink-secondary">
-              <Clock3 className="size-3 text-warning" />
-              {isPaid ? "ชำระแล้ว" : isExpired ? "หมดอายุ" : `เหลือ ${formatCountdown(remaining)}`}
-            </div>
+      <div className="bg-gradient-to-b from-[#edf3fc] via-surface-subtle to-surface-muted px-4 py-5 sm:px-6">
+        <div className="flex flex-wrap items-start justify-center gap-4">
+          <div className="w-full min-w-[260px] max-w-[400px] flex-1">
+            <PromptPaySlip
+              order={created}
+              payeeName={payeeName}
+              remaining={remaining}
+              isPaid={isPaid}
+              isExpired={isExpired}
+            />
           </div>
 
-          <div className="p-5">
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted">
-                ยอดโอนสุทธิ
-              </p>
-              <Badge tone="warning">ต้องโอนให้ตรงทศนิยม</Badge>
-            </div>
-            <p className="mt-1 font-mono text-[38px] font-bold leading-none tracking-tight tabular-nums text-ink">
-              {formatCurrency(created.total_amount)}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-ink-secondary">
-              <span>
-                base <span className="font-semibold text-ink">{formatCurrency(created.base_amount)}</span>
-              </span>
-              <span>
-                decimal_ref{" "}
-                <span className="font-semibold text-warning-ink">
-                  +{created.decimal_ref.toFixed(2)}
-                </span>
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-2 border-t border-line pt-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-[11px] text-ink-muted">order_id</span>
-                <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate font-mono text-[11px] text-ink-secondary">
-                    {created.order_id}
-                  </span>
-                  <CopyButton value={created.order_id} iconOnly label="คัดลอก order id" />
-                </span>
+          <aside className="w-full space-y-3 sm:w-[264px] sm:flex-none">
+            <div className="rounded-card border border-line bg-surface p-3.5 shadow-card">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted">
+                  Order metadata
+                </p>
+                <Badge tone="neutral">API</Badge>
               </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-[11px] text-ink-muted">lookup_key</span>
-                <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate font-mono text-[11px] text-ink-secondary">
-                    {created.lookup_key}
-                  </span>
-                  <CopyButton value={created.lookup_key} iconOnly label="คัดลอก lookup key" />
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-[11px] text-ink-muted">หมดอายุ</span>
-                <span className="font-mono text-[11px] text-ink-secondary">
-                  {formatDateTime(created.expires_at)} · {formatTime(created.expires_at)}
-                </span>
-              </div>
+              <dl className="mt-3 space-y-3 text-[11px]">
+                <div>
+                  <dt className="text-ink-muted">order_id</dt>
+                  <dd className="mt-1 flex items-start gap-1">
+                    <span className="min-w-0 break-all font-mono leading-4 text-ink">
+                      {created.order_id}
+                    </span>
+                    <CopyButton
+                      value={created.order_id}
+                      iconOnly
+                      label="คัดลอก order id"
+                      className="shrink-0"
+                    />
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-ink-muted">lookup_key</dt>
+                  <dd className="mt-1 flex items-start gap-1">
+                    <span className="min-w-0 break-all font-mono leading-4 text-ink">
+                      {created.lookup_key}
+                    </span>
+                    <CopyButton
+                      value={created.lookup_key}
+                      iconOnly
+                      label="คัดลอก lookup key"
+                      className="shrink-0"
+                    />
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-ink-muted">หมดอายุ</dt>
+                  <dd className="mt-1 font-mono leading-4 text-ink">
+                    {formatDateTime(created.expires_at)}
+                  </dd>
+                </div>
+              </dl>
             </div>
 
-            <div className="mt-4 rounded-card border border-line bg-surface-subtle p-3">
-              <div className="flex items-center justify-between">
-                <p className="flex items-center gap-1.5 text-[11px] font-semibold text-ink-secondary">
-                  <Loader2
-                    className={cn(
-                      "size-3 text-brand",
-                      status === "UNVERIFIED" && !isExpired ? "animate-spin" : "hidden",
-                    )}
-                  />
+            <div className="rounded-card border border-line bg-surface p-3 shadow-card">
+              <div className="flex items-center gap-1.5">
+                <Loader2
+                  className={cn(
+                    "size-3 shrink-0 text-brand",
+                    status === "UNVERIFIED" && !isExpired ? "animate-spin" : "hidden",
+                  )}
+                />
+                <p className="text-[11px] font-semibold text-ink-secondary">
                   {status === "PAID"
                     ? "ยืนยันการชำระแล้ว"
                     : isExpired
                       ? "หยุดติดตามสถานะ"
                       : "กำลังติดตามสถานะทุก 3 วินาที"}
                 </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onRefresh}
-                  loading={checkingOrder}
-                  icon={<RefreshCw className="size-3" />}
-                  className="h-7 px-2 text-[11px]"
-                >
-                  ตรวจตอนนี้
-                </Button>
               </div>
               {lastChecked ? (
-                <p className="mt-1 font-mono text-[11px] text-ink-muted">
+                <p className="mt-1 font-mono text-[10px] text-ink-muted">
                   last checked {formatTime(lastChecked.toISOString())}
                 </p>
               ) : null}
-              {pollError ? (
-                <p className="mt-1 text-[11px] text-danger-ink">{pollError}</p>
-              ) : null}
+              {pollError ? <p className="mt-1 text-[11px] text-danger-ink">{pollError}</p> : null}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRefresh}
+                loading={checkingOrder}
+                icon={<RefreshCw className="size-3" />}
+                className="mt-2 h-7 w-full justify-start px-2 text-[11px]"
+              >
+                ตรวจสอบสถานะตอนนี้
+              </Button>
             </div>
 
             {detailed ? (
               <OrderTimeline detail={detailed} />
             ) : (
-              <p className="mt-3 text-center text-[11px] leading-4 text-ink-muted">
-                สถานะจะอัปเดตอัตโนมัติจากการ polling ทุก 3 วินาที
+              <p className="rounded-card border border-dashed border-line p-3 text-center text-[11px] leading-4 text-ink-muted">
+                สถานะจะอัปเดตอัตโนมัติทุก 3 วินาที
               </p>
             )}
-          </div>
+          </aside>
         </div>
       </div>
     </Card>
@@ -850,9 +618,9 @@ function CheckoutPanel({
 
 function OrderTimeline({ detail }: { detail: PaymentOrderDetailData }) {
   return (
-    <div className="mt-4 space-y-2 border-t border-line pt-3">
+    <div className="rounded-card border border-line bg-surface-subtle p-3">
       <div className="flex items-center justify-between text-[11px]">
-        <span className="flex items-center gap-1.5 text-ink-secondary">
+        <span className="flex items-center gap-1.5 font-semibold text-ink-secondary">
           <span
             className={cn(
               "size-1.5 rounded-full",
@@ -865,21 +633,12 @@ function OrderTimeline({ detail }: { detail: PaymentOrderDetailData }) {
           {detail.paid_at ? formatDateTime(detail.paid_at) : "ยังไม่ชำระ"}
         </span>
       </div>
-      <div className="flex items-center justify-between text-[11px]">
+      <div className="mt-2 flex items-center justify-between text-[11px]">
         <span className="flex items-center gap-1.5 text-ink-secondary">
           <Clock3 className="size-3" />
           ตรวจสอบสถานะล่าสุด
         </span>
         <span className="font-mono text-ink-secondary">polling</span>
-      </div>
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="flex items-center gap-1.5 text-ink-secondary">
-          <Link2 className="size-3" />
-          LINE User ID
-        </span>
-        <span className="font-mono text-[11px] text-ink-secondary">
-          {maskLineUserId(detail.line_user_id)}
-        </span>
       </div>
     </div>
   );
@@ -934,18 +693,6 @@ function OrderDetail({ inspected }: { inspected: PaymentOrderDetailData }) {
             <span className="text-ink-muted">expires_at</span>
             <span className="font-mono text-ink-secondary">{formatDateTime(inspected.expires_at)}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-ink-muted">is_line_link</span>
-            <Badge tone={inspected.is_line_link ? "brand" : "neutral"}>
-              {inspected.is_line_link ? "true" : "false"}
-            </Badge>
-          </div>
-          <div>
-            <span className="text-ink-muted">line_user_id</span>
-            <p className="mt-1 break-all rounded-control bg-surface-subtle p-2 font-mono text-[11px] leading-4 text-ink-secondary">
-              {maskLineUserId(inspected.line_user_id)}
-            </p>
-          </div>
           <div>
             <span className="text-ink-muted">business_id</span>
             <p className="mt-1 break-all rounded-control bg-surface-subtle p-2 font-mono text-[11px] leading-4 text-ink-secondary">
@@ -953,13 +700,7 @@ function OrderDetail({ inspected }: { inspected: PaymentOrderDetailData }) {
             </p>
           </div>
         </div>
-        {inspected.is_line_link ? (
-          <div className="mt-3 flex items-start gap-1.5 rounded-control border border-brand-border bg-brand-soft px-2.5 py-2 text-[11px] leading-4 text-brand-ink">
-            <Link2 className="mt-0.5 size-3.5 shrink-0" />
-            คำสั่งซื้อนี้ใช้ผูก LINE (ยอด 0.01–0.99) — ไม่ตัดโควต้า
-            และตรวจพบผลด้วย polling สถานะทุก 3 วินาที
-          </div>
-        ) : inspected.status === "PAID" ? (
+        {inspected.status === "PAID" ? (
           <div className="mt-3 flex items-center gap-1.5 rounded-control border border-success-border bg-success-soft px-2.5 py-2 text-[11px] font-medium text-success-ink">
             <CheckCircle2 className="size-3.5" />
             ยืนยันการชำระเงินจากการ polling สถานะแล้ว

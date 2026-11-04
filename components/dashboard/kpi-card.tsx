@@ -52,7 +52,7 @@ export function KpiCard({
         {value}
       </div>
       {hint ? (
-        <div className="mt-2 text-[11px] leading-5 text-ink-secondary">{hint}</div>
+        <div className="mt-2 text-[15px] leading-5 text-ink-secondary">{hint}</div>
       ) : null}
       {footer ? <div className="mt-3">{footer}</div> : null}
     </div>

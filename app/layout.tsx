@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s · APay",
   },
   description:
-    "APay Payment Gateway backoffice — PromptPay QR, KBank LINE webhook verification, subscriptions and analytics.",
+    "APay Payment Gateway backoffice — PromptPay QR, Notification matching, subscriptions and analytics.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

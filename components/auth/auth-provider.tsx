@@ -24,7 +24,6 @@ import {
   saveSession,
   subscribeAuthStore,
   toStoredSession,
-  updateStoredUser,
   type ActiveBusiness,
   type StoredSession,
 } from "@/lib/auth/storage";
@@ -37,10 +36,6 @@ interface AuthContextValue {
   businessId: string | null;
   isHydrating: boolean;
   isAuthenticated: boolean;
-  /** LINE User ID bound to the business, `null` while not linked (or for admins). */
-  lineUserId: string | null;
-  isLineLinked: boolean;
-  setLineUserId: (lineUserId: string | null) => void;
   login: (credentials: LoginRequest) => Promise<AuthUserSummary>;
   logout: () => void;
   setActiveBusiness: (business: ActiveBusiness | null) => void;
@@ -138,10 +133,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveActiveBusiness({ ...current, name });
   }, []);
 
-  const setLineUserId = useCallback((lineUserId: string | null) => {
-    updateStoredUser({ line_user_id: lineUserId });
-  }, []);
-
   const value = useMemo<AuthContextValue>(() => {
     const role = session?.user.role ?? null;
     const businessId =
@@ -150,8 +141,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         : role === "admin"
           ? (activeBusiness?.id ?? null)
           : null;
-    // Sessions created before LINE linking shipped have no `line_user_id` key.
-    const lineUserId = session?.user.line_user_id ?? null;
 
     return {
       session,
@@ -161,9 +150,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       businessId,
       isHydrating: !hydrated,
       isAuthenticated: Boolean(session),
-      lineUserId,
-      isLineLinked: Boolean(lineUserId),
-      setLineUserId,
       login,
       logout,
       setActiveBusiness,
@@ -177,7 +163,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     setActiveBusiness,
     setBusinessDisplayName,
-    setLineUserId,
   ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

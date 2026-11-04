@@ -204,7 +204,6 @@ export default function SubscriptionPage() {
       <PageHeader
         eyebrow="Prepaid billing"
         title="แพ็กเกจ & โควต้า"
-        description="ตรวจสอบ paid-through, โควต้าคงเหลือ และรอบบิลย้อนหลัง"
         actions={
           <>
             <Button
@@ -227,13 +226,12 @@ export default function SubscriptionPage() {
         }
       />
 
-      <SubscriptionBanner subscription={current} adminView={isAdmin} />
+      <SubscriptionBanner subscription={current} adminView={isAdmin} showDetailsLink={false} />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="โควต้าคงเหลือ"
           value={formatNumber(current.quota_remaining)}
-          hint={`ใช้ไป ${formatNumber(current.quota_used)} / ${formatNumber(current.quota_limit)} ครั้ง`}
           icon={Gauge}
           tone={quotaRatio >= 0.8 ? "danger" : quotaRatio >= 0.5 ? "warning" : "brand"}
           footer={<Progress value={quotaRatio * 100} tone={quotaTone(quotaRatio)} />}
@@ -241,14 +239,12 @@ export default function SubscriptionPage() {
         <KpiCard
           label="วันคงเหลือในรอบบิล"
           value={`${days} วัน`}
-          hint={`Paid through ${formatDate(current.current_period_end)}`}
           icon={CalendarClock}
           tone={days <= 7 ? "warning" : "brand"}
         />
         <KpiCard
           label="ชำระครั้งล่าสุด"
           value={current.last_payment_at ? formatDate(current.last_payment_at) : "—"}
-          hint={current.last_payment_at ? formatDateTime(current.last_payment_at) : "ยังไม่มีประวัติชำระ"}
           icon={Wallet}
           tone="neutral"
         />
@@ -257,7 +253,6 @@ export default function SubscriptionPage() {
           value={`${formatNumber(details?.api_keys.used ?? 0)} / ${formatNumber(
             details?.api_keys.max ?? current.max_api_keys,
           )}`}
-          hint={`Rate limit ${formatNumber(current.rate_limit_per_hour)} requests / hour`}
           icon={KeyRound}
           tone="brand"
         />
@@ -266,8 +261,7 @@ export default function SubscriptionPage() {
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard
           className="xl:col-span-2"
-          title="Daily Quota Burn-down"
-          description="ยอดโควต้าที่ใช้สะสมและโควต้าคงเหลือรายวัน"
+          title="ยอดโควต้าที่ใช้สะสมและโควต้าคงเหลือรายวัน"
         >
           {burnDownSeries.length > 0 ? (
             <SeriesChart series={burnDownSeries} height={300} />
@@ -288,8 +282,7 @@ export default function SubscriptionPage() {
               <ReceiptText className="size-4" />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-ink">Subscription details</h2>
-              <p className="text-[11px] text-ink-muted">ข้อมูลรอบบิลปัจจุบัน</p>
+              <h2 className="text-sm font-semibold text-ink">ข้อมูลรอบบิลปัจจุบัน</h2>
             </div>
           </div>
           <dl className="mt-4 space-y-3 text-[11px]">
